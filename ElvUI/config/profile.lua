@@ -190,6 +190,7 @@ P["nameplate"] = {
 	},
 	['castBar'] = {
 		['height'] = 6,
+		['offset'] = 0,
 		["hideSpellName"] = false,
 		["hideTime"] = false,
 		["castTimeFormat"] = "CURRENT",
@@ -254,6 +255,7 @@ P["bags"] = {
 
 P["unitframe"] = {
 	["smoothbars"] = false,
+	["smoothSpeed"] = 0.3,
 	["statusbar"] = "ElvUI Norm",
 	["font"] = "Homespun",
 	["fontSize"] = 10,

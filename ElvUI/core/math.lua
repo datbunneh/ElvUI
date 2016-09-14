@@ -178,9 +178,9 @@ end
 local styles = {
 	["CURRENT"] = "%s",
 	["CURRENT_MAX"] = "%s / %s",
-	["CURRENT_PERCENT"] = "%s | %.1f%%",
-	["CURRENT_MAX_PERCENT"] = "%s / %s | %.1f%%",
-	["PERCENT"] = "%.1f%%",
+	["CURRENT_PERCENT"] = "%s | %s%%",
+	["CURRENT_MAX_PERCENT"] = "%s / %s | %s%%",
+	["PERCENT"] = "%s%%",
 	["DEFICIT"] = "-%s"
 };
 
@@ -201,7 +201,7 @@ function E:GetFormattedText(style, min, max)
 			return format(useStyle, E:ShortValue(deficit));
 		end
 	elseif(style == "PERCENT") then
-		local s = format(useStyle, min / max * 100);
+		local s = format(useStyle, ceil(min / max * 100));
 		return s;
 	elseif(style == "CURRENT" or ((style == "CURRENT_MAX" or style == "CURRENT_MAX_PERCENT" or style == "CURRENT_PERCENT") and min == max)) then
 		return format(styles["CURRENT"], E:ShortValue(min));

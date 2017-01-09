@@ -4,8 +4,7 @@ local UF = E:GetModule("UnitFrames");
 local UnitIsPlayer = UnitIsPlayer;
 
 function UF:Construct_NameText(frame)
-	local parent = frame.RaisedElementParent or frame;
-	local name = parent:CreateFontString(nil, "OVERLAY");
+	local name = frame.RaisedElementParent:CreateFontString(nil, "OVERLAY");
 	UF:Configure_FontString(name);
 	name:Point("CENTER", frame.Health);
 
@@ -23,9 +22,6 @@ function UF:UpdateNameSettings(frame, childType)
 	local name = frame.Name;
 	if(not db.power or not db.power.hideonnpc) then
 		local attachPoint = self:GetObjectAnchorPoint(frame, db.name.attachTextTo);
-		if(E.global.tukuiMode and frame.InfoPanel and frame.InfoPanel:IsShown()) then
-			attachPoint = frame.InfoPanel;
-		end
 		name:ClearAllPoints();
 		name:Point(db.name.position, attachPoint, db.name.position, db.name.xOffset, db.name.yOffset);
 	end

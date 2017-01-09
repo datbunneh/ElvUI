@@ -9,19 +9,19 @@ local floor = floor;
 local format, find, match, strrep, len, sub, gsub = string.format, string.find, string.match, strrep, string.len, string.sub, string.gsub;
 
 local CreateFrame = CreateFrame;
+local GetActiveTalentGroup = GetActiveTalentGroup;
 local GetCVar = GetCVar;
+local GetFunctionCPUUsage = GetFunctionCPUUsage;
+local GetTalentTabInfo = GetTalentTabInfo;
+local InCombatLockdown = InCombatLockdown;
 local IsAddOnLoaded = IsAddOnLoaded;
-local GetSpellInfo = GetSpellInfo;
 local IsInInstance, GetNumPartyMembers, GetNumRaidMembers = IsInInstance, GetNumPartyMembers, GetNumRaidMembers;
 local RequestBattlefieldScoreData = RequestBattlefieldScoreData;
-local GetCombatRatingBonus = GetCombatRatingBonus;
-local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff;
 local SendAddonMessage = SendAddonMessage;
-local InCombatLockdown = InCombatLockdown;
-local GetFunctionCPUUsage = GetFunctionCPUUsage;
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
 local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS;
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT;
+local MAX_TALENT_TABS = MAX_TALENT_TABS;
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
 
 E.myclass = select(2, UnitClass("player")); -- Constants
 E.myrace = select(2, UnitRace("player"));
@@ -43,8 +43,8 @@ E["statusBars"] = {};
 E["texts"] = {};
 E["snapBars"] = {};
 E["RegisteredModules"] = {};
-E['RegisteredInitialModules'] = {};
-E['valueColorUpdateFuncs'] = {};
+E["RegisteredInitialModules"] = {};
+E["valueColorUpdateFuncs"] = {};
 E.TexCoords = {.08, .92, .08, .92};
 E.FrameLocks = {};
 E.VehicleLocks = {};
@@ -64,35 +64,75 @@ E.InversePoints = {
 };
 
 E.DispelClasses = {
-	['PRIEST'] = {
-		['Magic'] = true,
-		['Disease'] = true
+	["PRIEST"] = {
+		["Magic"] = true,
+		["Disease"] = true
 	},
-	['SHAMAN'] = {
-		['Poison'] = true,
-		['Disease'] = true,
-		['Curse'] = true
+	["SHAMAN"] = {
+		["Poison"] = true,
+		["Disease"] = true,
+		["Curse"] = true
 	},
-	['PALADIN'] = {
-		['Poison'] = true,
-		['Magic'] = true,
-		['Disease'] = true
+	["PALADIN"] = {
+		["Poison"] = true,
+		["Magic"] = true,
+		["Disease"] = true
 	},
-	['MAGE'] = {
-		['Curse'] = true
+	["MAGE"] = {
+		["Curse"] = true
 	},
-	['DRUID'] = {
-		['Curse'] = true,
-		['Poison'] = true
+	["DRUID"] = {
+		["Curse"] = true,
+		["Poison"] = true
 	},
 };
+
+E.HealingClasses = {
+	PALADIN = 1,
+	SHAMAN = 3,
+	DRUID = 3,
+	PRIEST = {1, 2}
+};
+
+E.ClassRole = {
+	PALADIN = {
+		[1] = "Caster",
+		[2] = "Tank",
+		[3] = "Melee"
+	},
+	PRIEST = "Caster",
+	WARLOCK = "Caster",
+	WARRIOR = {
+		[1] = "Melee",
+		[2] = "Melee",
+		[3] = "Tank"
+	},
+	HUNTER = "Melee",
+	SHAMAN = {
+		[1] = "Caster",
+		[2] = "Melee",
+		[3] = "Caster"
+	},
+	ROGUE = "Melee",
+	MAGE = "Caster",
+	DEATHKNIGHT = {
+		[1] = "Tank",
+		[2] = "Melee",
+		[3] = "Melee"
+	},
+	DRUID = {
+		[1] = "Caster",
+		[2] = "Melee",
+		[3] = "Caster"
+	}
+}
 
 E.noop = function() end;
 
 local colorizedName;
-local length = len(E.UIName)
+local length = len("ElvUI")
 for i = 1, length do
-	local letter = sub(E.UIName, i, i);
+	local letter = sub("ElvUI", i, i);
 	if(i == 1) then
 		colorizedName = format("|cffA11313%s", letter);
 	elseif(i == 2) then
@@ -160,10 +200,6 @@ function E:UpdateMedia()
 		border = {r = 0, g = 0, b = 0};
 	end
 
-	if(self.global.tukuiMode) then
-		border = {r=0.6, g = 0.6, b = 0.6};
-	end
-
 	self["media"].bordercolor = {border.r, border.g, border.b};
 	self["media"].backdropcolor = E:GetColorTable(self.db["general"].backdropcolor);
 	self["media"].backdropfadecolor = E:GetColorTable(self.db["general"].backdropfadecolor);
@@ -174,10 +210,6 @@ function E:UpdateMedia()
 		self.db["general"].valuecolor.r = value.r;
 		self.db["general"].valuecolor.g = value.g;
 		self.db["general"].valuecolor.b = value.b;
-	end
-
-	if(self.global.tukuiMode) then
-		value = {r = 1, g = 1, b = 1};
 	end
 
 	self["media"].hexvaluecolor = self:RGBToHex(value.r, value.g, value.b);
@@ -201,15 +233,37 @@ local function LSMCallback()
 end
 E.LSM.RegisterCallback(E, "LibSharedMedia_Registered", LSMCallback);
 
+local LBF = LibStub("LibButtonFacade", true);
+
+local LBFGroupToTableElement = {
+	["ActionBars"] = "actionbar",
+	["Auras"] = "auras"
+};
+
+function E:LBFCallback(SkinID, _, _, Group)
+	if(not E.private) then return; end
+	local element = LBFGroupToTableElement[Group];
+	if(element) then
+		if(E.private[element].lbf.enable) then
+			E.private[element].lbf.skin = SkinID;
+		end
+	end
+end
+
+if(LBF) then
+	LBF:RegisterSkinCallback("ElvUI", E.LBFCallback, E);
+end
+
 function E:RequestBGInfo()
 	RequestBattlefieldScoreData();
 end
 
 function E:PLAYER_ENTERING_WORLD()
-	self:CheckRole()
 	if(not self.MediaUpdated) then
 		self:UpdateMedia();
 		self.MediaUpdated = true;
+	else
+		self:ScheduleTimer("CheckRole", 0.01);
 	end
 
 	local _, instanceType = IsInInstance();
@@ -302,32 +356,57 @@ E["snapBars"][#E["snapBars"] + 1] = E.UIParent;
 E.HiddenFrame = CreateFrame("Frame");
 E.HiddenFrame:Hide();
 
-function E:CheckRole()
-	if event == "UNIT_AURA" and unit ~= "player" then return end
-	if (E.myclass == "PALADIN" and UnitBuff("player", GetSpellInfo(25780))) and GetCombatRatingBonus(CR_DEFENSE_SKILL) > 100 or
-	(E.myclass == "WARRIOR" and GetBonusBarOffset() == 2) or
-	(E.myclass == "DEATHKNIGHT" and UnitBuff("player", GetSpellInfo(48263))) or
-	(E.myclass == "DRUID" and GetBonusBarOffset() == 3) then
-		E.Role = "Tank"
-	else
-		local playerint = select(2, UnitStat("player", 4))
-		local playeragi	= select(2, UnitStat("player", 2))
-		local base, posBuff, negBuff = UnitAttackPower("player");
-		local playerap = base + posBuff + negBuff;
+function E:IsDispellableByMe(debuffType)
+	if(not self.DispelClasses[self.myclass]) then return; end
 
-		if ((playerap > playerint) or (playeragi > playerint)) and not (UnitBuff("player", GetSpellInfo(24858)) or UnitBuff("player", GetSpellInfo(65139))) then
-			E.Role = "Melee"
-		else
-			E.Role = "Caster"
-		end
+	if(self.DispelClasses[self.myclass][debuffType]) then
+		return true;
 	end
 end
 
-function E:IsDispellableByMe(debuffType)
-	if not self.DispelClasses[E.myclass] then return; end
+function E:GetTalentSpecInfo(isInspect)
+	local talantGroup = GetActiveTalentGroup(isInspect)
+	local maxPoints, specIdx, specName, specIcon = 0, 0
 
-	if self.DispelClasses[E.myclass][debuffType] then
-		return true;
+	for i = 1, MAX_TALENT_TABS do
+		local name, icon, pointsSpent = GetTalentTabInfo(i, isInspect, nil, talantGroup)
+		if maxPoints < pointsSpent then
+			maxPoints = pointsSpent
+			specIdx = i
+			specName = name
+			specIcon = icon
+		end
+	end
+
+	if not specName then
+		specName = "None"
+	end
+	if not specIcon then
+		specIcon = "Interface\\Icons\\INV_Misc_QuestionMark"
+	end
+
+	return specIdx, specName, specIcon
+end
+
+function E:CheckRole()
+	local talentTree = self:GetTalentSpecInfo();
+	local role;
+
+	if(type(self.ClassRole[self.myclass]) == "string") then
+		role = self.ClassRole[self.myclass];
+	elseif(talentTree) then
+		if(self.myclass == "DRUID" and talentTree == 2) then
+			role = select(5, GetTalentInfo(talentTree, 22)) > 0 and "Tank" or "Melee";
+		else
+			role = self.ClassRole[self.myclass][talentTree];
+		end
+	end
+
+	if(not role) then role = "Melee"; end
+
+	if(self.Role ~= role) then
+		self.Role = role;
+		self.callbacks:Fire("RoleChanged");
 	end
 end
 
@@ -608,7 +687,7 @@ local function SendRecieve(_, event, prefix, message, _, sender)
 		if(sender == myName) then return; end
 		if(prefix == "ELVUI_VERSIONCHK" and not E.recievedOutOfDateMessage) then
 			if(tonumber(message) ~= nil and tonumber(message) > tonumber(E.version)) then
-				E:Print(L["ElvUI is out of date. You can download the newest version from https://github.com/ElvUI-WotLK/ElvUI/"]:gsub("ElvUI", E.UIName));
+				E:Print(L["ElvUI is out of date. You can download the newest version from https://github.com/ElvUI-WotLK/ElvUI/"]);
 
 				if((tonumber(message) - tonumber(E.version)) >= 0.05) then
 					E:StaticPopup_Show("ELVUI_UPDATE_AVAILABLE");
@@ -634,7 +713,7 @@ function E:UpdateAll(ignoreInstall)
 	self.global = self.data.global;
 	self.db.theme = nil;
 	self.db.install_complete = nil;
-	--LibStub('LibDualSpec-1.0'):EnhanceDatabase(self.data, "ElvUI");
+	--LibStub("LibDualSpec-1.0"):EnhanceDatabase(self.data, "ElvUI");
 
 	self:SetMoversPositions();
 	self:UpdateMedia();
@@ -699,7 +778,7 @@ function E:UpdateAll(ignoreInstall)
 		E:GetModule("Auras"):UpdateHeader(ElvUIPlayerDebuffs);
 	end
 
-	if(self.private.install_complete == nil or (self.private.install_complete and type(self.private.install_complete) == 'boolean') or (self.private.install_complete and type(tonumber(self.private.install_complete)) == 'number' and tonumber(self.private.install_complete) <= 3.83)) then
+	if(self.private.install_complete == nil or (self.private.install_complete and type(self.private.install_complete) == "boolean") or (self.private.install_complete and type(tonumber(self.private.install_complete)) == "number" and tonumber(self.private.install_complete) <= 3.83)) then
 		if(not ignoreInstall) then
 			self:Install();
 		end
@@ -824,9 +903,9 @@ function E:InitializeInitialModules()
 end
 
 function E:RefreshModulesDB()
-	--local UF = self:GetModule("UnitFrames");
-	--twipe(UF.db);
-	--UF.db = self.db.unitframe;
+	local UF = self:GetModule("UnitFrames");
+	twipe(UF.db);
+	UF.db = self.db.unitframe;
 end
 
 function E:InitializeModules()
@@ -931,7 +1010,7 @@ function E:Initialize()
 	self:CheckIncompatible();
 	self:DBConversions();
 
-	self:CheckRole();
+	self:ScheduleTimer("CheckRole", 0.01);
 	self:UIScale("PLAYER_LOGIN");
 
 	self:LoadCommands();
@@ -952,18 +1031,10 @@ function E:Initialize()
 		self:HelloKittyFix();
 	end
 
-	if(self.global.tukuiMode) then
-		self.UIName = "Tukui";
-	end
-
 	self:UpdateMedia();
 	self:UpdateFrameTemplates();
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckRole");
-	self:RegisterEvent("UNIT_AURA", "CheckRole");
-	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "CheckRole");
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED", "CheckRole");
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED", "CheckRole");
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "CheckRole");
 	self:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS", "UIScale");
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 
@@ -977,18 +1048,7 @@ function E:Initialize()
 	self:RefreshModulesDB()
 	collectgarbage("collect");
 
-	if(self:IsFoolsDay() and not E.global.aprilFools and not self.global.tukuiMode) then
-		self:StaticPopup_Show("TUKUI_MODE");
-	end
-
 	if(self.db.general.loginmessage) then
-		print(select(2, E:GetModule("Chat"):FindURL("CHAT_MSG_DUMMY", format(L["LOGIN_MSG"]:gsub("ElvUI", E.UIName), self["media"].hexvaluecolor, self["media"].hexvaluecolor, self.version)))..".");
-	end
-
-	if(self.global.tukuiMode) then
-		if(self:IsFoolsDay()) then
-			self:ShowTukuiFrame();
-		end
-		self:Print("Thank you for being a good sport, type /aprilfools to revert the changes.");
+		print(select(2, E:GetModule("Chat"):FindURL("CHAT_MSG_DUMMY", format(L["LOGIN_MSG"], self["media"].hexvaluecolor, self["media"].hexvaluecolor, self.version)))..".");
 	end
 end

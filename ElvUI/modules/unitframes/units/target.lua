@@ -22,7 +22,7 @@ function UF:Construct_TargetFrame(frame)
 	frame.Buffs = self:Construct_Buffs(frame);
 	frame.Debuffs = self:Construct_Debuffs(frame);
 	frame.Threat = self:Construct_Threat(frame);
-	frame.Castbar = self:Construct_Castbar(frame, "RIGHT", L["Target Castbar"]);
+	frame.Castbar = self:Construct_Castbar(frame, L["Target Castbar"]);
 	frame.Castbar.SafeZone = nil;
 	frame.Castbar.LatencyTexture:Hide();
 	frame.RaidIcon = UF:Construct_RaidIcon(frame);
@@ -33,6 +33,7 @@ function UF:Construct_TargetFrame(frame)
 	frame.InfoPanel = self:Construct_InfoPanel(frame);
 	frame.AuraBars = self:Construct_AuraBarHeader(frame);
 	frame.Range = UF:Construct_Range(frame);
+	frame.PvP = UF:Construct_PvPIcon(frame);
 	frame.customTexts = {};
 
 	frame:Point("BOTTOMRIGHT", E.UIParent, "BOTTOM", 413, 68);
@@ -46,7 +47,7 @@ function UF:Update_TargetFrame(frame, db)
 	do
 		frame.ORIENTATION = db.orientation;
 		frame.UNIT_WIDTH = db.width;
-		frame.UNIT_HEIGHT = (E.global.tukuiMode and not db.infoPanel.enable) and db.height + db.infoPanel.height or db.height;
+		frame.UNIT_HEIGHT = db.infoPanel.enable and (db.height + db.infoPanel.height) or db.height;
 
 		frame.USE_POWERBAR = db.power.enable;
 		frame.POWERBAR_DETACHED = db.power.detachFromFrame;
@@ -69,13 +70,15 @@ function UF:Update_TargetFrame(frame, db)
 		frame.CLASSBAR_DETACHED = db.combobar.detachFromFrame;
 		frame.USE_MINI_CLASSBAR = db.combobar.fill == "spaced" and frame.USE_CLASSBAR;
 		frame.CLASSBAR_HEIGHT = frame.USE_CLASSBAR and db.combobar.height or 0;
-		frame.CLASSBAR_WIDTH = frame.UNIT_WIDTH - ((frame.BORDER+frame.SPACING)*2) - frame.PORTRAIT_WIDTH  - frame.POWERBAR_OFFSET;
+		frame.CLASSBAR_WIDTH = frame.UNIT_WIDTH - ((frame.BORDER+frame.SPACING)*2) - frame.PORTRAIT_WIDTH - frame.POWERBAR_OFFSET;
 		frame.CLASSBAR_YOFFSET = (not frame.USE_CLASSBAR or not frame.CLASSBAR_SHOWN or frame.CLASSBAR_DETACHED) and 0 or (frame.USE_MINI_CLASSBAR and (frame.SPACING+(frame.CLASSBAR_HEIGHT/2)) or (frame.CLASSBAR_HEIGHT + frame.SPACING));
 
-		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and (db.infoPanel.enable or E.global.tukuiMode);
+		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and db.infoPanel.enable;
 		frame.INFO_PANEL_HEIGHT = frame.USE_INFO_PANEL and db.infoPanel.height or 0;
 
 		frame.BOTTOM_OFFSET = UF:GetHealthBottomOffset(frame);
+
+		frame.VARIABLES_SET = true;
 	end
 
 	frame.colors = ElvUF.colors;
@@ -124,10 +127,12 @@ function UF:Update_TargetFrame(frame, db)
 
 	UF:Configure_Range(frame);
 
+	UF:Configure_PVPIcon(frame)
+
 	UF:Configure_CustomTexts(frame);
 
 	E:SetMoverSnapOffset(frame:GetName() .. "Mover", -(12 + db.castbar.height));
-	frame:UpdateAllElements();
+	frame:UpdateAllElements("ElvUI_UpdateAllElements");
 end
 
 tinsert(UF["unitstoload"], "target");

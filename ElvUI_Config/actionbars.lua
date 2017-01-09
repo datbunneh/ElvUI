@@ -13,7 +13,6 @@ local function BuildABConfig()
 	for i = 1, 6 do
 		local name = L["Bar "] .. i;
 		group["bar" .. i] = {
-			order = i,
 			order = 200,
 			name = name,
 			type = "group",
@@ -64,7 +63,7 @@ local function BuildABConfig()
 					desc = L["The frame is not shown unless you mouse over the frame."]
 				},
 				inheritGlobalFade = {
- 					order = 7,
+					order = 7,
 					type = "toggle",
 					name = L["Inherit Global Fade"],
 					desc = L["Inherit the global fade, mousing over, targetting, setting focus, losing health, entering combat will set the remove transparency. Otherwise it will use the transparency level in the general actionbar settings for global fade alpha."]
@@ -132,7 +131,7 @@ local function BuildABConfig()
 					order = 15,
 					type = "input",
 					name = L["Action Paging"],
-					desc = L["This works like a macro, you can run different situations to get the actionbar to page differently.\n Example: '[combat] 2;'"],
+					desc = L["This works like a macro, you can run different situations to get the actionbar to page differently.\n Example: [combat] 2;"],
 					width = "full",
 					multiline = true,
 					get = function(info) return E.db.actionbar["bar" .. i]["paging"][E.myclass]; end,
@@ -149,7 +148,7 @@ local function BuildABConfig()
 					type = "input",
 					order = 16,
 					name = L["Visibility State"],
-					desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: '[combat] show;hide'"],
+					desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: [combat] show;hide"],
 					width = "full",
 					multiline = true,
 					set = function(info, value)
@@ -162,7 +161,7 @@ local function BuildABConfig()
 
 		if(i == 6) then
 			group["bar" .. i].args.enabled.set = function(info, value)
-				E.db.actionbar['bar'..i].enabled = value;
+				E.db.actionbar["bar"..i].enabled = value;
 				AB:PositionAndSizeBar("bar6");
 
 				AB:UpdateBar1Paging();
@@ -172,10 +171,9 @@ local function BuildABConfig()
 	end
 
 	group["barPet"] = {
-		order = i,
+		order = 300,
 		name = L["Pet Bar"],
 		type = "group",
-		order = 300,
 		guiInline = false,
 		disabled = function() return not E.private.actionbar.enable end,
 		get = function(info) return E.db.actionbar["barPet"][ info[#info] ] end,
@@ -213,7 +211,7 @@ local function BuildABConfig()
 				type = "toggle",
 			},
 			inheritGlobalFade = {
- 				order = 6,
+				order = 6,
 				type = "toggle",
 				name = L["Inherit Global Fade"],
 				desc = L["Inherit the global fade, mousing over, targetting, setting focus, losing health, entering combat will set the remove transparency. Otherwise it will use the transparency level in the general actionbar settings for global fade alpha."]
@@ -278,7 +276,7 @@ local function BuildABConfig()
 				type = "input",
 				order = 15,
 				name = L["Visibility State"],
-				desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: '[combat] show;hide'"],
+				desc = L["This works like a macro, you can run different situations to get the actionbar to show/hide differently.\n Example: [combat] show;hide"],
 				width = "full",
 				multiline = true,
 				set = function(info, value)
@@ -289,10 +287,9 @@ local function BuildABConfig()
 		},
 	}
 	group["stanceBar"] = {
-		order = i,
+		order = 400,
 		name = L["Stance Bar"],
 		type = "group",
-		order = 400,
 		guiInline = false,
 		disabled = function() return not E.private.actionbar.enable end,
 		get = function(info) return E.db.actionbar["barShapeShift"][ info[#info] ] end,
@@ -330,7 +327,7 @@ local function BuildABConfig()
 				type = "toggle",
 			},
 			inheritGlobalFade = {
- 				order = 6,
+				order = 6,
 				type = "toggle",
 				name = L["Inherit Global Fade"],
 				desc = L["Inherit the global fade, mousing over, targetting, setting focus, losing health, entering combat will set the remove transparency. Otherwise it will use the transparency level in the general actionbar settings for global fade alpha."]
@@ -406,10 +403,9 @@ local function BuildABConfig()
 
 	if E.myclass == "SHAMAN" then
 		group["barTotem"] = {
-			order = i,
+			order = 100,
 			name = L["Totems"],
 			type = "group",
-			order = 100,
 			guiInline = false,
 			disabled = function() return not E.private.actionbar.enable or not E.myclass == "SHAMAN" end,
 			get = function(info) return E.db.actionbar["barTotem"][ info[#info] ] end,
@@ -419,6 +415,7 @@ local function BuildABConfig()
 					order = 1,
 					type = "toggle",
 					name = L["Enable"],
+					set = function(info, value) E.db.actionbar["barTotem"][ info[#info] ] = value; E:StaticPopup_Show("PRIVATE_RL"); end
 				},
 				restorePosition = {
 					order = 2,
@@ -525,8 +522,21 @@ E.Options.args.actionbar = {
 				["CTRL"] = CTRL_KEY
 			}
 		},
+		lockActionBars = {
+			order = 8,
+			type = "toggle",
+			name = LOCK_ACTIONBAR_TEXT,
+			desc = L["If you unlock actionbars then trying to move a spell might instantly cast it if you cast spells on key press instead of key release."],
+			set = function(info, value)
+				E.db.actionbar[ info[#info] ] = value;
+				AB:UpdateButtonSettings();
+
+				SetCVar("lockActionBars", (value == true and 1 or 0));
+				LOCK_ACTIONBAR = (value == true and "1" or "0");
+			end
+		},
 		globalFadeAlpha = {
- 			order = 8,
+			order = 9,
 			type = "range",
 			name = L["Global Fade Transparency"],
 			desc = L["Transparency level when not in combat, no target exists, full health, not casting, and no focus target exists."],
@@ -535,7 +545,7 @@ E.Options.args.actionbar = {
 			set = function(info, value) E.db.actionbar[ info[#info] ] = value; AB.fadeParent:SetAlpha(1-value); end,
 		},
 		colorGroup = {
-			order = 9,
+			order = 10,
 			type = "group",
 			name = L["Colors"],
 			guiInline = true,
@@ -578,7 +588,7 @@ E.Options.args.actionbar = {
 			}
 		},
 		fontGroup = {
-			order = 7,
+			order = 11,
 			type = "group",
 			guiInline = true,
 			disabled = function() return not E.private.actionbar.enable end,
@@ -624,6 +634,23 @@ E.Options.args.actionbar = {
 						t.r, t.g, t.b = r, g, b;
 						AB:UpdateButtonSettings();
 					end
+				}
+			}
+		},
+		lbf = {
+			order = 12,
+			type = "group",
+			guiInline = true,
+			name = L["LBF Support"],
+			get = function(info) return E.private.actionbar.lbf[info[#info]]; end,
+			set = function(info, value) E.private.actionbar.lbf[info[#info]] = value; E:StaticPopup_Show("PRIVATE_RL"); end,
+			disabled = function() return not E.private.actionbar.enable; end,
+			args = {
+				enable = {
+					order = 1,
+					type = "toggle",
+					name = L["Enable"],
+					desc = L["Allow LBF to handle the skinning of this element."]
 				}
 			}
 		},

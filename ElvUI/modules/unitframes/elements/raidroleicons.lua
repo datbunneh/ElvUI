@@ -18,7 +18,7 @@ local function CheckLeader(unit)
 	end
 end
 
-local function UpdateOverride(self, event)
+local function UpdateOverride(self)
 	local leader = self.Leader;
 	if(leader.PreUpdate) then
 		leader:PreUpdate();
@@ -38,7 +38,7 @@ local function UpdateOverride(self, event)
 end
 
 function UF:Construct_RaidRoleFrames(frame)
-	local anchor = CreateFrame("Frame", nil, frame);
+	local anchor = CreateFrame("Frame", nil, frame.RaisedElementParent);
 	frame.Leader = anchor:CreateTexture(nil, "OVERLAY");
 	frame.Assistant = anchor:CreateTexture(nil, "OVERLAY");
 	frame.MasterLooter = anchor:CreateTexture(nil, "OVERLAY");
@@ -65,7 +65,7 @@ function UF:Configure_RaidRoleIcons(frame)
 		if(not frame:IsElementEnabled("Leader")) then
 			frame:EnableElement("Leader");
 			frame:EnableElement("MasterLooter");
-			frame:EnableElement('Assistant');
+			frame:EnableElement("Assistant");
 		end
 
 		raidRoleFrameAnchor:ClearAllPoints();
@@ -78,19 +78,20 @@ function UF:Configure_RaidRoleIcons(frame)
 		raidRoleFrameAnchor:Hide();
 		frame:DisableElement("Leader");
 		frame:DisableElement("MasterLooter");
-		frame:DisableElement('Assistant');
+		frame:DisableElement("Assistant");
 	end
 end
 
 function UF:RaidRoleUpdate()
 	local anchor = self:GetParent();
-	local leader = anchor:GetParent().Leader;
-	local assistant = anchor:GetParent().Assistant;
-	local masterLooter = anchor:GetParent().MasterLooter;
+	local frame = anchor:GetParent():GetParent()
+	local leader = frame.Leader
+	local assistant = frame.Assistant
+	local masterLooter = frame.MasterLooter
 
 	if(not leader or not masterLooter or not assistant) then return; end
 
-	local db = anchor:GetParent().db;
+	local db = frame.db
 	local isLeader = leader:IsShown();
 	local isMasterLooter = masterLooter:IsShown();
 	local isAssist = assistant:IsShown();

@@ -111,7 +111,7 @@ E.Options.args.chat = {
 					desc = L["Log the main chat frames history. So when you reloadui or log in and out you see the history from your last session."]
 				},
 				useAltKey = {
- 					order = 10,
+					order = 10,
 					type = "toggle",
 					name = L["Use Alt Key"],
 					desc = L["Require holding the Alt key down to move cursor or cycle through messages in the editbox."],
@@ -150,14 +150,21 @@ E.Options.args.chat = {
 					end
 				},
 				numAllowedCombatRepeat = {
- 					order = 14,
+					order = 14,
 					type = "range",
 					name = L["Allowed Combat Repeat"],
 					desc = L["Number of repeat characters while in combat before the chat editbox is automatically closed."],
 					min = 2, max = 10, step = 1
 				},
-				timeStampFormat = {
+				numScrollMessages = {
 					order = 15,
+					type = "range",
+					name = L["Scroll Messages"],
+					desc = L["Number of messages you scroll for each step."],
+					min = 1, max = 10, step = 1,
+				},
+				timeStampFormat = {
+					order = 16,
 					type = "select",
 					name = TIMESTAMPS_LABEL,
 					desc = OPTION_TOOLTIP_TIMESTAMPS,
@@ -172,13 +179,13 @@ E.Options.args.chat = {
 					}
 				},
 				useCustomTimeColor = {
-					order = 16,
+					order = 17,
 					type = "toggle",
 					name = L["Custom Timestamp Color"],
 					disabled = function() return not E.db.chat.timeStampFormat == "NONE"; end
 				},
 				customTimeColor = {
-					order = 17,
+					order = 18,
 					type = "color",
 					hasAlpha = false,
 					name = L["Timestamp Color"],
@@ -195,7 +202,7 @@ E.Options.args.chat = {
 					end
 				},
 				chatDirection = {
-					order = 18,
+					order = 19,
 					type = "select",
 					name = "Chat Direction",
 					desc = "Controls where text is added to the chat frame.",
@@ -204,19 +211,8 @@ E.Options.args.chat = {
 						["TOP"] = "Top to bottom"
 					}
 				},
-				chatLines = {
-					order = 19,
-					type = "range",
-					name = L["Max Chat Lines"],
-					desc = L["Number of chat messages to be kept in the frame before old messages are discarded. The interface has to be reloaded to show effect."],
-					min = 125, max = 5000, step = 5,
-					set = function(info, value)
-						E.db.chat.chatLines = value;
-						E:StaticPopup_Show("PRIVATE_RL");
-					end
-				},
 				chatHistoryLines = {
-					order = 20,
+					order = 21,
 					type = "range",
 					name = L["Chat History Lines"],
 					desc = L["Number of chat messages to be stores in the chat history."],
@@ -252,7 +248,7 @@ E.Options.args.chat = {
 					values = AceGUIWidgetLSMlists.sound,
 				},
 				noAlertInCombat = {
- 					order = 3,
+					order = 3,
 					type = "toggle",
 					name = L["No Alert In Combat"]
 				},

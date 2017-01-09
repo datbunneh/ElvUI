@@ -195,8 +195,8 @@ E.PopupDialogs["PRIVATE_RL"] = {
 
 E.PopupDialogs["KEYBIND_MODE"] = {
 	text = L["Hover your mouse over any actionbutton or spellbook button to bind it. Press the escape key or right click to clear the current actionbutton's keybinding."],
-	button1 = L['Save'],
-	button2 = L['Discard'],
+	button1 = L["Save"],
+	button2 = L["Discard"],
 	OnAccept = function() local AB = E:GetModule("ActionBars"); AB:DeactivateBindMode(true); end,
 	OnCancel = function() local AB = E:GetModule("ActionBars"); AB:DeactivateBindMode(false); end,
 	timeout = 0,
@@ -241,7 +241,7 @@ E.PopupDialogs["CANNOT_BUY_BANK_SLOT"] = {
 };
 
 E.PopupDialogs["NO_BANK_BAGS"] = {
-	text = L['You must purchase a bank slot first!'],
+	text = L["You must purchase a bank slot first!"],
 	button1 = ACCEPT,
 	timeout = 0,
 	whileDead = 1
@@ -268,17 +268,6 @@ E.PopupDialogs["HARLEM_SHAKE"] = {
 			E:BeginHarlemShake();
 			return true;
 		end
-	end,
-	timeout = 0,
-	whileDead = 1
-};
-
-E.PopupDialogs["TUKUI_MODE"] = {
-	text = L["ElvUI needs to perform database optimizations please be patient."],
-	button1 = OKAY,
-	OnAccept = function()
-		E.global.tukuiMode = true;
-		ReloadUI();
 	end,
 	timeout = 0,
 	whileDead = 1
@@ -338,6 +327,57 @@ E.PopupDialogs["RESET_PROFILE_PROMPT"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	OnAccept = function() E:ResetProfile(); end
+};
+
+E.PopupDialogs["APPLY_FONT_WARNING"] = {
+	text = L["Are you sure you want to apply this font to all ElvUI elements?"],
+	OnAccept = function()
+		local font = E.db.general.font;
+		local fontSize = E.db.general.fontSize;
+
+		E.db.bags.itemLevelFont = font;
+		E.db.bags.itemLevelFontSize = fontSize;
+		E.db.bags.countFont = font;
+		E.db.bags.countFontSize = fontSize;
+		E.db.nameplate.font = font;
+		--E.db.nameplate.fontSize = fontSize;
+		E.db.nameplate.buffs.font = font;
+		--E.db.nameplate.buffs.fontSize = fontSize;
+		E.db.nameplate.debuffs.font = font;
+		--E.db.nameplate.debuffs.fontSize = fontSize;
+		E.db.actionbar.font = font
+		--E.db.actionbar.fontSize = fontSize
+		E.db.auras.font = font;
+		E.db.auras.fontSize = fontSize;
+		E.db.general.reminder.font = font;
+		--E.db.general.reminder.fontSize = fontSize;
+		E.db.chat.font = font;
+		E.db.chat.fontSize = fontSize;
+		E.db.chat.tabFont = font;
+		E.db.chat.tapFontSize = fontSize;
+		E.db.datatexts.font = font;
+		E.db.datatexts.fontSize = fontSize;
+		E.db.tooltip.font = font;
+		E.db.tooltip.fontSize = fontSize;
+		E.db.tooltip.headerFontSize = fontSize;
+		E.db.tooltip.textFontSize = fontSize;
+		E.db.tooltip.smallTextFontSize = fontSize;
+		E.db.tooltip.healthBar.font = font;
+		--E.db.tooltip.healthbar.fontSize = fontSize;
+		E.db.unitframe.font = font;
+		--E.db.unitframe.fontSize = fontSize;
+		--E.db.unitframe.units.party.rdebuffs.font = font;
+		E.db.unitframe.units.raid.rdebuffs.font = font;
+		E.db.unitframe.units.raid40.rdebuffs.font = font;
+
+		E:UpdateAll(true);
+	end,
+	OnCancel = function() E:StaticPopup_Hide("APPLY_FONT_WARNING"); end,
+	button1 = YES,
+	button2 = CANCEL,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false
 };
 
 local MAX_STATIC_POPUPS = 4;
@@ -541,7 +581,7 @@ function E:StaticPopup_OnClick(index)
 		end
 	end
 
-	if(hide and (which == self.which)) then
+	if(hide and (which == self.which) and (index ~= 3 or not info.noCloseOnAlt)) then
 		self:Hide();
 	end
 end

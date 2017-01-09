@@ -216,11 +216,9 @@ function UF:Construct_UF(frame, unit)
 	frame.SHADOW_SPACING = 3;
 	frame.CLASSBAR_YOFFSET = 0;
 	frame.BOTTOM_OFFSET = 0;
-	frame:SetFrameLevel(5);
 
 	frame.RaisedElementParent = CreateFrame("Frame", nil, frame);
-	frame.RaisedElementParent:SetFrameStrata("MEDIUM");
-	frame.RaisedElementParent:SetFrameLevel(frame:GetFrameLevel() + 10);
+	frame.RaisedElementParent:SetFrameLevel(frame:GetFrameLevel() + 100);
 
 	if(not self["groupunits"][unit]) then
 		local stringTitle = E:StringTitle(unit);
@@ -423,7 +421,7 @@ function UF:Update_AllFrames()
 	self:UpdateAllHeaders();
 end
 
-function UF:CreateAndUpdateUFGroup(group, numGroup, template)
+function UF:CreateAndUpdateUFGroup(group, numGroup)
 	if(InCombatLockdown()) then self:RegisterEvent("PLAYER_REGEN_ENABLED"); return; end
 
 	for i = 1, numGroup do
@@ -479,7 +477,7 @@ function UF.groupPrototype:Configure_Groups(self)
 	local width, height, newCols, newRows = 0, 0, 0, 0;
 	local direction = db.growthDirection;
 	local xMult, yMult = DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[direction], DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[direction];
-	local UNIT_HEIGHT = (E.global.tukuiMode and db.infoPanel) and (db.height + db.infoPanel.height) or db.height;
+	local UNIT_HEIGHT = db.infoPanel and db.infoPanel.enable and (db.height + db.infoPanel.height) or db.height;
 
 	local numGroups = self.numGroups;
 
@@ -510,7 +508,6 @@ function UF.groupPrototype:Configure_Groups(self)
 			end]]
 
 			group:ClearAllPoints();
-
 			if(db.raidWideSorting and db.invertGroupingOrder) then
 				group:SetAttribute("columnAnchorPoint", INVERTED_DIRECTION_TO_COLUMN_ANCHOR_POINT[direction]);
 			else
@@ -595,6 +592,7 @@ function UF.groupPrototype:Configure_Groups(self)
 	if(self.mover) then
 		self.mover.positionOverride = DIRECTION_TO_GROUP_ANCHOR_POINT[direction];
 		E:UpdatePositionOverride(self.mover:GetName());
+		self:GetScript("OnSizeChanged")(self);
 	end
 
 	self:SetSize(width - db.horizontalSpacing, height - db.verticalSpacing);
@@ -632,9 +630,7 @@ end
 
 function UF.groupPrototype:UpdateHeader(self)
 	local group = self.groupName;
-	for i = 1, #self.groups do
-		UF["Update_"..E:StringTitle(group).."Header"](UF, self.groups[i], UF.db["units"][group], isForced);
-	end
+	UF["Update_"..E:StringTitle(group).."Header"](UF, self, UF.db["units"][group]);
 end
 
 function UF.headerPrototype:ClearChildPoints()
@@ -644,10 +640,9 @@ function UF.headerPrototype:ClearChildPoints()
 	end
 end
 
-function UF.headerPrototype:Update(isForced)
+function UF.headerPrototype:Update()
 	local groupName = self.groupName;
 	local db = UF.db["units"][groupName];
-	--UF["Update_"..E:StringTitle(groupName).."Header"](UF, self, db, isForced);
 
 	local i = 1;
 	local child = self:GetAttribute("child" .. i);
@@ -731,7 +726,7 @@ function UF:CreateAndUpdateHeaderGroup(group, groupFilter, template, headerUpdat
 
 			if(maxPlayers > 0) then
 				numGroups = E:Round(maxPlayers/5);
-				E:Print("Forcing maxGroups to: " .. numGroups .. " because maxPlayers is: " .. maxPlayers);
+				E:Print(group, "Forcing maxGroups to: " .. numGroups .. " because maxPlayers is: " .. maxPlayers);
 			end
 		end
 	end
@@ -1026,7 +1021,7 @@ function ElvUF:DisableBlizzard(unit)
 		local id = unit:match"arena(%d)";
 		if(id) then
 			HandleFrame("ArenaEnemyFrame"..id);
-			HandleFrame("ArenaEnemyFrame"..id..'PetFrame');
+			HandleFrame("ArenaEnemyFrame"..id.."PetFrame");
 		else
 			for i = 1, 5 do
 				HandleFrame(("ArenaEnemyFrame%d"):format(i));
@@ -1042,9 +1037,16 @@ function UF:ADDON_LOADED(_, addon)
 	self:UnregisterEvent("ADDON_LOADED");
 end
 
+local hasEnteredWorld = false
 function UF:PLAYER_ENTERING_WORLD(event)
-	self:Update_AllFrames();
-	self:UnregisterEvent(event);
+	if(not hasEnteredWorld) then
+		--We only want to run Update_AllFrames once when we first log in or /reload
+		self:Update_AllFrames();
+		hasEnteredWorld = true;
+	else
+		--We need to update headers in case we zoned into an instance
+		UF:UpdateAllHeaders();
+	end
 end
 
 function UF:UnitFrameThreatIndicator_Initialize(_, unitFrame)
@@ -1054,7 +1056,7 @@ end
 function UF:Initialize()
 	self.db = E.db["unitframe"];
 
-	self.thinBorders = E.global.tukuiMode or self.db.thinBorders or E.PixelMode;
+	self.thinBorders = self.db.thinBorders or E.PixelMode;
 	if(E.private["unitframe"].enable ~= true) then return; end
 	E.UnitFrames = UF;
 
@@ -1123,7 +1125,7 @@ function UF:Initialize()
 	if(not ORD) then return; end
 	ORD.ShowDispelableDebuff = true;
 	ORD.FilterDispellableDebuff = true;
-	ORD.MatchBySpellName = true;
+	ORD.MatchBySpellName = false;
 end
 
 function UF:ResetUnitSettings(unit)
@@ -1291,4 +1293,4 @@ function UF:ToggleTransparentStatusBar(isTransparent, statusBar, backdropTex, ad
 	end
 end
 
-E:RegisterModule(UF:GetName());
+E:RegisterInitialModule(UF:GetName());

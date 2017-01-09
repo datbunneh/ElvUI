@@ -57,7 +57,7 @@ local updateActiveUnit = function(self, event, unit)
 		modUnit = "vehicle";
 	end
 
-	if(not UnitExists(modUnit) or unit and unit ~= realUnit and unit ~= modUnit) then return; end
+	if(not UnitExists(modUnit)) then return end
 
 	if(Private.UpdateUnits(self, modUnit, realUnit)) then
 		self:UpdateAllElements("RefreshUnit");
@@ -160,6 +160,8 @@ for k, v in pairs{
 	UpdateAllElements = function(self, event)
 		local unit = self.unit;
 		if(not unit or not UnitExists(unit)) then return; end
+
+		assert(type(event) == 'string', 'Invalid argument "event" in UpdateAllElements.')
 
 		if(self.PreUpdate) then
 			self:PreUpdate(event);
@@ -279,6 +281,7 @@ local initObject = function(unit, style, styleFunc, header, ...)
 		if(not (suffix == "target" or objectUnit and objectUnit:match"target")) then
 			object:RegisterEvent("UNIT_ENTERED_VEHICLE", updateActiveUnit);
 			object:RegisterEvent("UNIT_EXITED_VEHICLE", updateActiveUnit);
+			object:RegisterEvent("PLAYER_ENTERING_WORLD", updateActiveUnit);
 
 			if(objectUnit ~= "player") then
 				object:RegisterEvent("UNIT_PET", UpdatePet);
@@ -536,12 +539,6 @@ function oUF:SpawnHeader(overrideName, template, visibility, ...)
 	header.styleFunction = styleProxy;
 	header.initialConfigFunction = initialConfigFunction;
 	header.headerType = isPetHeader and "pet" or "group";
-
-	for i = 1, select("#", ...), 2 do
-		local att, val = select(i, ...)
-		if(not att) then break end
-		header:SetAttribute(att, val)
-	end
 
 	if(header:GetAttribute("showParty")) then
 		self:DisableBlizzard("party");

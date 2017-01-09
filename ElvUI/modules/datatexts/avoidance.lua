@@ -23,7 +23,7 @@ local basemisschance, leveldifference, dodge, parry, block, avoidance, unhittabl
 local chanceString = "%.2f%%";
 local AVD_DECAY_RATE = 1.5;
 
-function IsWearingShield()
+local function IsWearingShield()
 	local slotID = GetInventorySlotInfo("SecondaryHandSlot");
 	local itemID = GetInventoryItemID("player", slotID);
 
@@ -123,4 +123,4 @@ local function ValueColorUpdate(hex)
 end
 E["valueColorUpdateFuncs"][ValueColorUpdate] = true;
 
-DT:RegisterDatatext("Avoidance", {"UNIT_TARGET", "UNIT_STATS", "UNIT_AURA", "ACTIVE_TALENT_GROUP_CHANGED", "PLAYER_TALENT_UPDATE", "PLAYER_EQUIPMENT_CHANGED"}, OnEvent, nil, nil, OnEnter);
+DT:RegisterDatatext("Avoidance", {"COMBAT_RATING_UPDATE", "UNIT_TARGET"}, OnEvent, nil, nil, OnEnter);

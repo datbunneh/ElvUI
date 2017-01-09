@@ -1,5 +1,5 @@
 local E, L, V, P, G = unpack(select(2, ...)); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
-local S = E:GetModule('Skins')
+local S = E:GetModule("Skins")
 
 local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.gbank ~= true then return end
@@ -25,7 +25,7 @@ local function LoadSkin()
 
 	GuildBankFrameWithdrawButton:Point("RIGHT", GuildBankFrameDepositButton, "LEFT", -2, 0)
 
-	GuildBankInfoScrollFrame:Point('TOPLEFT', GuildBankInfo, 'TOPLEFT', -10, 12)
+	GuildBankInfoScrollFrame:Point("TOPLEFT", GuildBankInfo, "TOPLEFT", -10, 12)
 	GuildBankInfoScrollFrame:StripTextures()
 	GuildBankInfoScrollFrame:Width(GuildBankInfoScrollFrame:GetWidth() + 14)
 
@@ -85,7 +85,7 @@ local function LoadSkin()
 		S:HandleTab(_G["GuildBankFrameTab"..i])
 	end
 
-	hooksecurefunc('GuildBankFrame_Update', function()
+	hooksecurefunc("GuildBankFrame_Update", function()
 		if GuildBankFrame.mode ~= "bank" then return; end
 		local tab = GetCurrentGuildBankTab();
 		local button, index, column, itemLink, itemRarity, r, g, b;
@@ -113,26 +113,7 @@ local function LoadSkin()
 	end)
 
 	--Popup
-	GuildBankPopupFrame:StripTextures()
-	GuildBankPopupScrollFrame:StripTextures()
-	GuildBankPopupFrame:SetTemplate("Transparent")
-	GuildBankPopupFrame:Point("TOPLEFT", GuildBankFrame, "TOPRIGHT", 1, -30)
-	S:HandleButton(GuildBankPopupOkayButton)
-	S:HandleButton(GuildBankPopupCancelButton)
-	S:HandleEditBox(GuildBankPopupEditBox)
-	GuildBankPopupNameLeft:Kill()
-	GuildBankPopupNameRight:Kill()
-	GuildBankPopupNameMiddle:Kill()
-
-	for i=1, 16 do
-		local button = _G["GuildBankPopupButton"..i]
-		local icon = _G[button:GetName().."Icon"]
-		button:StripTextures()
-		button:SetTemplate("Default")
-		button:StyleButton(nil, true)
-		icon:SetInside()
-		icon:SetTexCoord(unpack(E.TexCoords))
-	end
+	S:HandleIconSelectionFrame(GuildBankPopupFrame, NUM_GUILDBANK_ICONS_SHOWN, "GuildBankPopupButton", "GuildBankPopup");
 
 	S:HandleScrollBar(GuildBankTransactionsScrollFrameScrollBar)
 	S:HandleScrollBar(GuildBankInfoScrollFrameScrollBar)

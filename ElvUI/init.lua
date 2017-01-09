@@ -16,9 +16,9 @@ local pairs, unpack = pairs, unpack;
 BINDING_HEADER_ELVUI = GetAddOnMetadata(..., "Title");
 
 local AddOnName, Engine = ...;
-local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", 'AceTimer-3.0', 'AceHook-3.0');
+local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0");
 AddOn.callbacks = AddOn.callbacks or
-  LibStub("CallbackHandler-1.0"):New(AddOn);
+	LibStub("CallbackHandler-1.0"):New(AddOn);
 AddOn.DF = {}; AddOn.DF["profile"] = {}; AddOn.DF["global"] = {}; AddOn.privateVars = {}; AddOn.privateVars["profile"] = {}; -- Defaults
 AddOn.Options = {
 	type = "group",
@@ -34,7 +34,6 @@ Engine[4] = AddOn.DF["profile"];
 Engine[5] = AddOn.DF["global"];
 
 _G[AddOnName] = Engine;
-Engine[1].UIName = AddOnName;
 local tcopy = table.copy
 function AddOn:OnInitialize()
 	if not ElvCharacterDB then
@@ -54,7 +53,7 @@ function AddOn:OnInitialize()
 
 		local profileKey
 		if ElvDB.profileKeys then
-			profileKey = ElvDB.profileKeys[self.myname..' - '..self.myrealm]
+			profileKey = ElvDB.profileKeys[self.myname.." - "..self.myrealm]
 		end
 
 		if profileKey and ElvDB.profiles and ElvDB.profiles[profileKey] then
@@ -66,7 +65,7 @@ function AddOn:OnInitialize()
 	if ElvPrivateDB then
 		local profileKey
 		if ElvPrivateDB.profileKeys then
-			profileKey = ElvPrivateDB.profileKeys[self.myname..' - '..self.myrealm]
+			profileKey = ElvPrivateDB.profileKeys[self.myname.." - "..self.myrealm]
 		end
 
 		if profileKey and ElvPrivateDB.profiles and ElvPrivateDB.profiles[profileKey] then
@@ -74,7 +73,7 @@ function AddOn:OnInitialize()
 		end
 	end
 
-	if(self.private.general.pixelPerfect and not self.global.tukuiMode) then
+	if(self.private.general.pixelPerfect) then
 		self.Border = self.mult;
 		self.Spacing = 0;
 		self.PixelMode = true;
@@ -83,8 +82,8 @@ function AddOn:OnInitialize()
 	self:UIScale();
 	self:UpdateMedia();
 
-	self:RegisterEvent('PLAYER_REGEN_DISABLED')
-	--self:RegisterEvent('PLAYER_LOGIN', 'Initialize')
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	--self:RegisterEvent("PLAYER_LOGIN", "Initialize")
 	self:Contruct_StaticPopups()
 	self:InitializeInitialModules()
 
@@ -107,7 +106,7 @@ function AddOn:OnInitialize()
 			GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight() + 1);
 			GameMenuFrame.isElvUI = true;
 		end
-		local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint();
+		local _, relTo = GameMenuButtonLogout:GetPoint();
 		if(relTo ~= GameMenuFrame[AddOnName]) then
 			GameMenuFrame[AddOnName]:ClearAllPoints();
 			GameMenuFrame[AddOnName]:Point("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1);
@@ -127,7 +126,7 @@ end);
 
 function AddOn:PLAYER_REGEN_ENABLED()
 	self:ToggleConfig()
-	self:UnregisterEvent('PLAYER_REGEN_ENABLED');
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED");
 end
 
 function AddOn:PLAYER_REGEN_DISABLED()
@@ -137,7 +136,7 @@ function AddOn:PLAYER_REGEN_DISABLED()
 		local ACD = LibStub("AceConfigDialog-3.0-ElvUI")
 
 		if ACD.OpenFrames[AddOnName] then
-			self:RegisterEvent('PLAYER_REGEN_ENABLED');
+			self:RegisterEvent("PLAYER_REGEN_ENABLED");
 			ACD:Close(AddOnName);
 			err = true;
 		end
@@ -160,7 +159,7 @@ end
 function AddOn:ResetProfile()
 	local profileKey
 	if ElvPrivateDB.profileKeys then
-		profileKey = ElvPrivateDB.profileKeys[self.myname..' - '..self.myrealm]
+		profileKey = ElvPrivateDB.profileKeys[self.myname.." - "..self.myrealm]
 	end
 
 	if profileKey and ElvPrivateDB.profiles and ElvPrivateDB.profiles[profileKey] then
@@ -178,7 +177,7 @@ end
 function AddOn:ToggleConfig()
 	if InCombatLockdown() then
 		self:Print(ERR_NOT_IN_COMBAT)
-		self:RegisterEvent('PLAYER_REGEN_ENABLED')
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		return;
 	end
 
@@ -198,12 +197,12 @@ function AddOn:ToggleConfig()
 
 	local ACD = LibStub("AceConfigDialog-3.0-ElvUI")
 
-	local mode = 'Close'
+	local mode = "Close"
 	if not ACD.OpenFrames[AddOnName] then
-		mode = 'Open'
+		mode = "Open"
 	end
 
-	if mode == 'Open' then
+	if mode == "Open" then
 		ElvConfigToggle.text:SetTextColor(unpack(AddOn.media.rgbvaluecolor));
 		PlaySound("igMainMenuOpen");
 	else

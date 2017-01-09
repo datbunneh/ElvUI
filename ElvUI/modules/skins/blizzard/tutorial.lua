@@ -1,5 +1,5 @@
 local E, L, V, P, G, _ = unpack(select(2, ...));
-local S = E:GetModule('Skins')
+local S = E:GetModule("Skins")
 
 local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.tutorial ~= true then return end
@@ -23,7 +23,7 @@ local function LoadSkin()
 	tutorialbuttonIcon:SetTexture("INTERFACE\\ICONS\\INV_Letter_18")
 	tutorialbuttonIcon:ClearAllPoints()
 	tutorialbuttonIcon:SetPoint("TOPLEFT", TutorialFrameAlertButton, "TOPLEFT", 5, -5)
-	tutorialbuttonIcon:SetPoint("BOTTOMRIGHT", TutorialFrameAlertButton, "BOTTOMRIGHT",  -5, 5)
+	tutorialbuttonIcon:SetPoint("BOTTOMRIGHT", TutorialFrameAlertButton, "BOTTOMRIGHT", -5, 5)
 	tutorialbuttonIcon:SetTexCoord(unpack(E.TexCoords))
 
 	TutorialFrame:StripTextures()

@@ -1,5 +1,5 @@
 local E, L, V, P, G = unpack(select(2, ...)); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
-local S = E:GetModule('Skins')
+local S = E:GetModule("Skins")
 
 local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.gossip ~= true then return end
@@ -16,43 +16,25 @@ local function LoadSkin()
 	ItemTextPageText:SetTextColor(1, 1, 1)
 	ItemTextPageText.SetTextColor = E.noop
 
-	local StripAllTextures = {
-		"GossipFrameGreetingPanel",
-	}
-
 	S:HandleScrollBar(GossipGreetingScrollFrameScrollBar, 5)
 
-	for _, object in pairs(StripAllTextures) do
-		_G[object]:StripTextures()
-	end
+	GossipFrameGreetingPanel:StripTextures();
 
-	local KillTextures = {
-		"GossipFramePortrait",
-	}
+	GossipFramePortrait:Kill();
 
-	for _, texture in pairs(KillTextures) do
-		_G[texture]:Kill()
-	end
-
-	local buttons = {
-		"GossipFrameGreetingGoodbyeButton",
-	}
-
-	for i = 1, #buttons do
-		_G[buttons[i]]:StripTextures()
-		S:HandleButton(_G[buttons[i]])
-	end
+	S:HandleButton(GossipFrameGreetingGoodbyeButton);
+	GossipFrameGreetingGoodbyeButton:Point("BOTTOMRIGHT", GossipFrame, -34, 71);
 
 	for i = 1, NUMGOSSIPBUTTONS do
-		obj = select(3,_G["GossipTitleButton"..i]:GetRegions())
+		local obj = select(3,_G["GossipTitleButton"..i]:GetRegions())
 		obj:SetTextColor(1,1,1)
 	end
 
 	GossipGreetingText:SetTextColor(1,1,1)
 	GossipFrame:CreateBackdrop("Transparent")
-	GossipFrame.backdrop:Point("TOPLEFT", GossipFrame, "TOPLEFT", 15, -20)
-	GossipFrame.backdrop:Point("BOTTOMRIGHT", GossipFrame, "BOTTOMRIGHT", -30, 65)
-	S:HandleCloseButton(GossipFrameCloseButton,GossipFrame.backdrop)
+	GossipFrame.backdrop:Point("TOPLEFT", 15, -19);
+	GossipFrame.backdrop:Point("BOTTOMRIGHT", -30, 67);
+	S:HandleCloseButton(GossipFrameCloseButton);
 
 	hooksecurefunc("GossipFrameUpdate", function()
 		for i=1, NUMGOSSIPBUTTONS do

@@ -26,9 +26,9 @@ local INVERT_ANCHORPOINT = {
 	BOTTOM = "TOP"
 };
 
-function UF:Construct_Castbar(frame, direction, moverName)
+function UF:Construct_Castbar(frame, moverName)
 	local castbar = CreateFrame("StatusBar", nil, frame);
-	castbar:SetFrameStrata("HIGH");
+	castbar:SetFrameLevel(frame.RaisedElementParent:GetFrameLevel() + 30);
 	self["statusbars"][castbar] = true;
 
 	castbar.OnUpdate = self.OnCastUpdate;
@@ -71,7 +71,7 @@ function UF:Construct_Castbar(frame, direction, moverName)
 
 	local button = CreateFrame("Frame", nil, castbar);
 	local holder = CreateFrame("Frame", nil, castbar);
-	button:SetTemplate("Default", nil, nil, self.thinBorders and not E.global.tukuiMode);
+	button:SetTemplate("Default", nil, nil, self.thinBorders);
 
 	castbar.Holder = holder;
 
@@ -84,7 +84,7 @@ function UF:Construct_Castbar(frame, direction, moverName)
 	end
 
 	local icon = button:CreateTexture(nil, "ARTWORK");
-	local offset = (not E.global.tukuiMode and frame.BORDER or E.Border);
+	local offset = frame.BORDER;
 	icon:SetInside(nil, offset, offset);
 	icon:SetTexCoord(unpack(E.TexCoords));
 	icon.bg = button;
@@ -96,6 +96,7 @@ function UF:Construct_Castbar(frame, direction, moverName)
 end
 
 function UF:Configure_Castbar(frame)
+	if(not frame.VARIABLES_SET) then return; end
 	local castbar = frame.Castbar;
 	local db = frame.db;
 	castbar:Width(db.castbar.width - ((frame.BORDER+frame.SPACING)*2));
@@ -116,7 +117,7 @@ function UF:Configure_Castbar(frame)
 
 	if(db.castbar.icon) then
 		castbar.Icon = castbar.ButtonIcon;
-		if((not db.castbar.iconAttached) or E.global.tukuiMode) then
+		if(not db.castbar.iconAttached) then
 			castbar.Icon.bg:Size(db.castbar.iconSize);
 		else
 			if(db.castbar.insideInfoPanel and frame.USE_INFO_PANEL) then
@@ -140,17 +141,17 @@ function UF:Configure_Castbar(frame)
 	end
 
 	castbar:ClearAllPoints();
-	if((db.castbar.insideInfoPanel and frame.USE_INFO_PANEL) or E.global.tukuiMode) then
+	if(db.castbar.insideInfoPanel and frame.USE_INFO_PANEL) then
 		castbar:Size(frame.InfoPanel:GetSize());
-		if((not db.castbar.iconAttached) or E.global.tukuiMode) then
+		if(not db.castbar.iconAttached) then
 			castbar:SetInside(frame.InfoPanel, 0, 0);
 		else
 			local iconWidth = db.castbar.icon and (castbar.Icon.bg:GetWidth() - frame.BORDER) or 0;
- 			if(frame.ORIENTATION == "RIGHT") then
+			if(frame.ORIENTATION == "RIGHT") then
 				castbar:SetPoint("TOPLEFT", frame.InfoPanel, "TOPLEFT");
 				castbar:SetPoint("BOTTOMRIGHT", frame.InfoPanel, "BOTTOMRIGHT", -iconWidth - frame.SPACING*3, 0);
 			else
-				castbar:SetPoint("TOPLEFT", frame.InfoPanel, "TOPLEFT",  iconWidth + frame.SPACING*3, 0);
+				castbar:SetPoint("TOPLEFT", frame.InfoPanel, "TOPLEFT", iconWidth + frame.SPACING*3, 0);
 				castbar:SetPoint("BOTTOMRIGHT", frame.InfoPanel, "BOTTOMRIGHT");
 			end
 		end
@@ -181,23 +182,15 @@ function UF:Configure_Castbar(frame)
 		end
 	end
 
-	if(E.global.tukuiMode and db.castbar.icon) then
-		castbar.Icon.bg:ClearAllPoints();
-		if(frame.ORIENTATION == "LEFT") then
-			castbar.Icon.bg:Point("RIGHT", frame, "LEFT", -10, 0);
-		else
-			castbar.Icon.bg:Point("LEFT", frame, "RIGHT", 10, 0);
-		end
-	elseif(not db.castbar.iconAttached and db.castbar.icon) then
+	if(not db.castbar.iconAttached and db.castbar.icon) then
 		local attachPoint = db.castbar.iconAttachedTo == "Frame" and frame or frame.Castbar;
 		local anchorPoint = db.castbar.iconPosition;
 		castbar.Icon.bg:ClearAllPoints();
 		castbar.Icon.bg:Point(INVERT_ANCHORPOINT[anchorPoint], attachPoint, anchorPoint, db.castbar.iconXOffset, db.castbar.iconYOffset);
-		castbar.Icon.bg:SetFrameStrata("HIGH");
 	elseif(db.castbar.icon) then
 		castbar.Icon.bg:ClearAllPoints();
 		if(frame.ORIENTATION == "RIGHT") then
- 			castbar.Icon.bg:Point("LEFT", castbar, "RIGHT", frame.SPACING*3, 0);
+			castbar.Icon.bg:Point("LEFT", castbar, "RIGHT", frame.SPACING*3, 0);
 		else
 			castbar.Icon.bg:Point("RIGHT", castbar, "LEFT", -frame.SPACING*3, 0);
 		end
@@ -393,18 +386,17 @@ function UF:PostCastStart(unit, name)
 
 	local colors = ElvUF.colors;
 	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3];
-	if(UF.db.colors.castClassColor) then
-		local t;
-		if(UnitIsPlayer(unit)) then
-			local _, Class = UnitClass(unit);
-			t = ElvUF.colors.class[Class];
-		elseif(UnitReaction(unit, "player")) then
-			t = ElvUF.colors.reaction[UnitReaction(unit, "player")];
-		end
 
-		if(t) then
-			r, g, b = t[1], t[2], t[3];
-		end
+	local t;
+	if(UF.db.colors.castClassColor and UnitIsPlayer(unit)) then
+		local _, class = UnitClass(unit);
+		t = ElvUF.colors.class[class];
+	elseif(UF.db.colors.castReactionColor and UnitReaction(unit, "player")) then
+		t = ElvUF.colors.reaction[UnitReaction(unit, "player")];
+	end
+
+	if(t) then
+		r, g, b = t[1], t[2], t[3];
 	end
 
 	if(self.interrupt and unit ~= "player" and UnitCanAttack("player", unit)) then
@@ -497,18 +489,16 @@ function UF:PostCastInterruptible(unit)
 	local colors = ElvUF.colors;
 	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3];
 
-	if(UF.db.colors.castClassColor) then
-		local t;
-		if(UnitIsPlayer(unit)) then
-			local _, class = UnitClass(unit)
-			t = ElvUF.colors.class[class]
-		elseif(UnitReaction(unit, "player")) then
-			t = ElvUF.colors.reaction[UnitReaction(unit, "player")];
-		end
+	local t;
+	if(UF.db.colors.castClassColor and UnitIsPlayer(unit)) then
+		local _, class = UnitClass(unit);
+		t = ElvUF.colors.class[class];
+	elseif(UF.db.colors.castReactionColor and UnitReaction(unit, "player")) then
+		t = ElvUF.colors.reaction[UnitReaction(unit, "player")];
+	end
 
-		if(t) then
-			r, g, b = t[1], t[2], t[3];
-		end
+	if(t) then
+		r, g, b = t[1], t[2], t[3];
 	end
 
 	if(UnitCanAttack("player", unit)) then

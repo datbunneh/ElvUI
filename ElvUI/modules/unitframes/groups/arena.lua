@@ -13,6 +13,9 @@ assert(ElvUF, "ElvUI was unable to locate oUF.");
 local ArenaHeader = CreateFrame("Frame", "ArenaHeader", UIParent);
 
 function UF:Construct_ArenaFrames(frame)
+	frame.RaisedElementParent = CreateFrame("Frame", nil, frame);
+	frame.RaisedElementParent:SetFrameLevel(frame:GetFrameLevel() + 100);
+
 	frame.Health = self:Construct_HealthBar(frame, true, true, "RIGHT");
 	frame.Name = self:Construct_NameText(frame);
 	frame.Power = self:Construct_PowerBar(frame, true, true, "LEFT");
@@ -20,7 +23,7 @@ function UF:Construct_ArenaFrames(frame)
 	frame.Portrait2D = self:Construct_Portrait(frame, "texture");
 	frame.Buffs = self:Construct_Buffs(frame);
 	frame.Debuffs = self:Construct_Debuffs(frame);
-	frame.Castbar = self:Construct_Castbar(frame, "RIGHT");
+	frame.Castbar = self:Construct_Castbar(frame);
 	frame.HealCommBar = UF:Construct_HealComm(frame);
 	frame.Trinket = self:Construct_Trinket(frame);
 	frame.Range = UF:Construct_Range(frame);
@@ -45,7 +48,7 @@ function UF:Update_ArenaFrames(frame, db)
 	do
 		frame.ORIENTATION = db.orientation;
 		frame.UNIT_WIDTH = db.width;
-		frame.UNIT_HEIGHT = (E.global.tukuiMode and not db.infoPanel.enable) and db.height + db.infoPanel.height or db.height;
+		frame.UNIT_HEIGHT = db.infoPanel.enable and db.height + db.infoPanel.height or db.height;
 
 		frame.USE_POWERBAR = db.power.enable;
 		frame.POWERBAR_DETACHED = db.power.detachFromFrame;
@@ -63,10 +66,12 @@ function UF:Update_ArenaFrames(frame, db)
 
 		frame.CLASSBAR_YOFFSET = 0;
 
-		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and (db.infoPanel.enable or E.global.tukuiMode);
+		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and db.infoPanel.enable;
 		frame.INFO_PANEL_HEIGHT = frame.USE_INFO_PANEL and db.infoPanel.height or 0;
 
 		frame.BOTTOM_OFFSET = UF:GetHealthBottomOffset(frame);
+
+		frame.VARIABLES_SET = true;
 	end
 
 	frame.colors = ElvUF.colors;
@@ -131,7 +136,7 @@ function UF:Update_ArenaFrames(frame, db)
 		ArenaHeader:Height(frame.UNIT_HEIGHT);
 	end
 
-	frame:UpdateAllElements();
+	frame:UpdateAllElements("ElvUI_UpdateAllElements");
 end
 
 UF["unitgroupstoload"]["arena"] = {5};

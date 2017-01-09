@@ -1,12 +1,8 @@
 local E, L, V, P, G = unpack(select(2, ...));
 local UF = E:GetModule("UnitFrames");
 
-local CreateFrame = CreateFrame;
-
 function UF:Construct_RoleIcon(frame)
-	local f = CreateFrame("Frame", nil, frame);
-
-	local tex = f:CreateTexture(nil, "ARTWORK");
+	local tex = frame.RaisedElementParent:CreateTexture(nil, "ARTWORK");
 	tex:Size(17);
 	tex:Point("BOTTOM", frame.Health, "BOTTOM", 0, 2);
 	tex.Override = UF.UpdateRoleIcon;

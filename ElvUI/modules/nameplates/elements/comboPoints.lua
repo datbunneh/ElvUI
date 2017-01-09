@@ -1,6 +1,5 @@
 local E, L, V, P, G = unpack(select(2, ...));
 local mod = E:GetModule("NamePlates");
-local LSM = LibStub("LibSharedMedia-3.0");
 
 local GetComboPoints = GetComboPoints;
 local UnitHasVehicleUI = UnitHasVehicleUI;
@@ -13,20 +12,19 @@ function mod:HideComboPoints(frame)
 end
 
 function mod:UpdateElement_CPoints(frame)
-	local myPlate = mod.CreatedPlates[frame];
 	local numPoints = mod.ComboPoints[frame.guid];
 	if(not numPoints) then
 		for i = 1, MAX_COMBO_POINTS do
-			myPlate.CPoints[i]:Hide();
+			frame.CPoints[i]:Hide();
 		end
 		return;
 	end
 
 	for i = 1, MAX_COMBO_POINTS do
 		if(i <= numPoints) then
-			myPlate.CPoints[i]:Show();
+			frame.CPoints[i]:Show();
 		else
-			myPlate.CPoints[i]:Hide();
+			frame.CPoints[i]:Hide();
 		end
 	end
 end
@@ -51,7 +49,7 @@ function mod:ConfigureElement_CPoints(frame)
 end
 
 function mod:ConstructElement_CPoints(parent)
-	frame = CreateFrame("Frame", nil, parent.HealthBar);
+	local frame = CreateFrame("Frame", nil, parent.HealthBar);
 	frame:Point("CENTER", parent.HealthBar, "BOTTOM");
 	frame:SetSize(68, 1);
 	frame:Hide();

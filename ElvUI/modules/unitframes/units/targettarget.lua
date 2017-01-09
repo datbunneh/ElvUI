@@ -32,7 +32,7 @@ function UF:Update_TargetTargetFrame(frame, db)
 	do
 		frame.ORIENTATION = db.orientation;
 		frame.UNIT_WIDTH = db.width;
-		frame.UNIT_HEIGHT = (E.global.tukuiMode and not db.infoPanel.enable) and db.height + db.infoPanel.height or db.height;
+		frame.UNIT_HEIGHT = db.infoPanel.enable and (db.height + db.infoPanel.height) or db.height;
 
 		frame.USE_POWERBAR = db.power.enable;
 		frame.POWERBAR_DETACHED = db.power.detachFromFrame;
@@ -48,10 +48,12 @@ function UF:Update_TargetTargetFrame(frame, db)
 		frame.USE_PORTRAIT_OVERLAY = frame.USE_PORTRAIT and (db.portrait.overlay or frame.ORIENTATION == "MIDDLE");
 		frame.PORTRAIT_WIDTH = (frame.USE_PORTRAIT_OVERLAY or not frame.USE_PORTRAIT) and 0 or db.portrait.width;
 
-		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and (db.infoPanel.enable or E.global.tukuiMode);
+		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and db.infoPanel.enable;
 		frame.INFO_PANEL_HEIGHT = frame.USE_INFO_PANEL and db.infoPanel.height or 0;
 
 		frame.BOTTOM_OFFSET = UF:GetHealthBottomOffset(frame);
+
+		frame.VARIABLES_SET = true;
 	end
 
 	frame.colors = ElvUF.colors;
@@ -83,7 +85,7 @@ function UF:Update_TargetTargetFrame(frame, db)
 	UF:Configure_CustomTexts(frame);
 
 	E:SetMoverSnapOffset(frame:GetName() .. "Mover", -(12 + self.db["units"].player.castbar.height));
-	frame:UpdateAllElements();
+	frame:UpdateAllElements("ElvUI_UpdateAllElements");
 end
 
 tinsert(UF["unitstoload"], "targettarget");

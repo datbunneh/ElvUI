@@ -99,13 +99,46 @@ function M:DisbandRaidGroup()
 	LeaveParty()
 end
 
+local function IsWorldMapFocused(frame)
+	if not frame then return; end
+
+	if(not GetCVarBool("miniWorldMap")) then
+		local frameName = frame:GetName();
+		if(frameName and frameName == "WorldMapFrame") then
+			return true;
+		end
+
+		if not frame:GetParent() or not frame:GetParent():GetName() then return; end
+
+		local parentName = frame:GetParent():GetName();
+		if(parentName and (parentName == "WorldMapFrame" or parentName == "WorldMapButton" or parentName == "WorldMapPOIFrame")) then
+			return true
+		end
+	else
+		return WorldMapFrame:IsMouseOver();
+	end
+end
+
 function M:CheckMovement()
-	if E.global.general.mapAlphaWhenMoving == 100 or not WorldMapFrame:IsShown() then return end
+	if(not WorldMapFrame:IsShown()) then return; end
 
 	if GetUnitSpeed("player") ~= 0 then
-		WorldMapFrame:SetAlpha(E.global.general.mapAlphaWhenMoving)
+		if(IsWorldMapFocused(GetMouseFocus())) then
+			WorldMapFrame:SetAlpha(1)
+		else
+			WorldMapFrame:SetAlpha(E.global.general.mapAlphaWhenMoving)
+		end
 	else
 		WorldMapFrame:SetAlpha(1)
+	end
+end
+
+function M:UpdateMapAlpha()
+	if((E.global.general.mapAlphaWhenMoving >= 1) and self.MovingTimer) then
+		self:CancelTimer(self.MovingTimer);
+		self.MovingTimer = nil;
+	elseif((E.global.general.mapAlphaWhenMoving < 1) and not self.MovingTimer) then
+		self.MovingTimer = self:ScheduleRepeatingTimer("CheckMovement", 0.1);
 	end
 end
 
@@ -179,7 +212,7 @@ end
 
 function M:ADDON_LOADED(_, addon)
 	if addon == "Blizzard_TradeSkillUI" then
-		TradeSkillLinkButton:SetScript("OnClick", function(self, button)
+		TradeSkillLinkButton:SetScript("OnClick", function()
 			local link = GetTradeSkillListLink()
 			local ChatFrameEditBox = ChatEdit_ChooseBoxForSend()
 
@@ -210,7 +243,9 @@ function M:Initialize()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("ADDON_LOADED")
 
-	self.MovingTimer = self:ScheduleRepeatingTimer("CheckMovement", 0.1)
+	if(E.global.general.mapAlphaWhenMoving < 1) then
+		self.MovingTimer = self:ScheduleRepeatingTimer("CheckMovement", 0.1)
+	end
 end
 
 E:RegisterModule(M:GetName())

@@ -59,8 +59,8 @@ E.Options.args.databars = {
 							set = function(info, value) mod.db.experience[ info[#info] ] = value; mod:UpdateExperience(); end
 						},
 						hideInCombat = {
- 							order = 4,
- 							type = "toggle",
+							order = 4,
+							type = "toggle",
 							name = L["Hide in Combat"],
 							set = function(info, value) mod.db.experience[ info[#info] ] = value; mod:UpdateExperience() end,
 						},
@@ -72,7 +72,7 @@ E.Options.args.databars = {
 						orientation = {
 							order = 6,
 							type = "select",
-							name = L["Orientation"],
+							name = L["Statusbar Fill Orientation"],
 							desc = L["Direction the bar moves on gains/losses"],
 							values = {
 								["HORIZONTAL"] = L["Horizontal"],
@@ -134,10 +134,13 @@ E.Options.args.databars = {
 							values = {
 								NONE = NONE,
 								PERCENT = L["Percent"],
+								CUR = L["Current"],
+								REM = L["Remaining"],
 								CURMAX = L["Current - Max"],
 								CURPERC = L["Current - Percent"],
+								CURREM = L["Current - Remaining"]
 							},
-							set = function(info, value) mod.db.reputation[ info[#info] ] = value; mod:UpdateExperience(); end
+							set = function(info, value) mod.db.experience[ info[#info] ] = value; mod:UpdateExperience(); end
 						}
 					}
 				}
@@ -176,8 +179,8 @@ E.Options.args.databars = {
 							set = function(info, value) mod.db.reputation[ info[#info] ] = value; mod:UpdateReputation() end
 						},
 						hideInCombat = {
- 							order = 3,
- 							type = "toggle",
+							order = 3,
+							type = "toggle",
 							name = L["Hide in Combat"],
 							set = function(info, value) mod.db.reputation[ info[#info] ] = value; mod:UpdateReputation() end,
 						},
@@ -189,7 +192,7 @@ E.Options.args.databars = {
 						orientation = {
 							order = 5,
 							type = "select",
-							name = L["Orientation"],
+							name = L["Statusbar Fill Orientation"],
 							desc = L["Direction the bar moves on gains/losses"],
 							values = {
 								["HORIZONTAL"] = L["Horizontal"],
@@ -250,9 +253,12 @@ E.Options.args.databars = {
 							name = L["Text Format"],
 							values = {
 								NONE = NONE,
+								CUR = L["Current"],
+								REM = L["Remaining"],
 								PERCENT = L["Percent"],
 								CURMAX = L["Current - Max"],
 								CURPERC = L["Current - Percent"],
+								CURREM = L["Current - Remaining"]
 							},
 							set = function(info, value) mod.db.reputation[ info[#info] ] = value; mod:UpdateReputation(); end
 						}

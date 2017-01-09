@@ -12,6 +12,9 @@ assert(ElvUF, "ElvUI was unable to locate oUF.");
 
 local BossHeader = CreateFrame("Frame", "BossHeader", UIParent);
 function UF:Construct_BossFrames(frame)
+	frame.RaisedElementParent = CreateFrame("Frame", nil, frame);
+	frame.RaisedElementParent:SetFrameLevel(frame:GetFrameLevel() + 100);
+
 	frame.Health = self:Construct_HealthBar(frame, true, true, "RIGHT");
 	frame.Power = self:Construct_PowerBar(frame, true, true, "LEFT");
 	frame.Name = self:Construct_NameText(frame);
@@ -26,7 +29,7 @@ function UF:Construct_BossFrames(frame)
 	frame:RegisterEvent("PLAYER_TARGET_CHANGED", UF.UpdateTargetGlow);
 	frame:RegisterEvent("PLAYER_ENTERING_WORLD", UF.UpdateTargetGlow);
 	frame:RegisterEvent("GROUP_ROSTER_UPDATE", UF.UpdateTargetGlow);
-	frame.Castbar = self:Construct_Castbar(frame, "RIGHT");
+	frame.Castbar = self:Construct_Castbar(frame);
 	frame.RaidIcon = UF:Construct_RaidIcon(frame);
 	frame.Range = UF:Construct_Range(frame);
 	frame:SetAttribute("type2", "focus");
@@ -44,7 +47,7 @@ function UF:Update_BossFrames(frame, db)
 	do
 		frame.ORIENTATION = db.orientation;
 		frame.UNIT_WIDTH = db.width;
-		frame.UNIT_HEIGHT = (E.global.tukuiMode and not db.infoPanel.enable) and db.height + db.infoPanel.height or db.height;
+		frame.UNIT_HEIGHT = db.infoPanel.enable and db.height + db.infoPanel.height or db.height;
 
 		frame.USE_POWERBAR = db.power.enable;
 		frame.POWERBAR_DETACHED = db.power.detachFromFrame;
@@ -60,10 +63,12 @@ function UF:Update_BossFrames(frame, db)
 		frame.USE_PORTRAIT_OVERLAY = frame.USE_PORTRAIT and (db.portrait.overlay or frame.ORIENTATION == "MIDDLE");
 		frame.PORTRAIT_WIDTH = (frame.USE_PORTRAIT_OVERLAY or not frame.USE_PORTRAIT) and 0 or db.portrait.width;
 
-		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and (db.infoPanel.enable or E.global.tukuiMode);
+		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and db.infoPanel.enable;
 		frame.INFO_PANEL_HEIGHT = frame.USE_INFO_PANEL and db.infoPanel.height or 0;
 
 		frame.BOTTOM_OFFSET = UF:GetHealthBottomOffset(frame);
+
+		frame.VARIABLES_SET = true;
 	end
 
 	frame.colors = ElvUF.colors;
@@ -128,7 +133,7 @@ function UF:Update_BossFrames(frame, db)
 		BossHeader:Height(frame.UNIT_HEIGHT)
 	end
 
-	frame:UpdateAllElements();
+	frame:UpdateAllElements("ElvUI_UpdateAllElements");
 end
 
 UF["unitgroupstoload"]["boss"] = { MAX_BOSS_FRAMES };

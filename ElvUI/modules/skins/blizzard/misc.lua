@@ -1,5 +1,5 @@
 local E, L, V, P, G, _ = unpack(select(2, ...)); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
-local S = E:GetModule('Skins')
+local S = E:GetModule("Skins")
 
 local find = string.find;
 
@@ -7,9 +7,6 @@ local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.misc ~= true then return end
 	-- Blizzard frame we want to reskin
 	local skins = {
-		"StaticPopup1",
-		"StaticPopup2",
-		"StaticPopup3",
 		"GameMenuFrame",
 		"InterfaceOptionsFrame",
 		"VideoOptionsFrame",
@@ -40,44 +37,62 @@ local function LoadSkin()
 	--
 	for i = 1, getn(ChatMenus) do
 		if _G[ChatMenus[i]] == _G["ChatMenu"] then
-			_G[ChatMenus[i]]:HookScript("OnShow", function(self) self:SetTemplate("Default", true) self:SetBackdropColor(unpack(E['media'].backdropfadecolor)) self:ClearAllPoints() self:Point("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 30) end)
+			_G[ChatMenus[i]]:HookScript("OnShow", function(self) self:SetTemplate("Default", true) self:SetBackdropColor(unpack(E["media"].backdropfadecolor)) self:ClearAllPoints() self:Point("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 30) end)
 		else
-			_G[ChatMenus[i]]:HookScript("OnShow", function(self) self:SetTemplate("Default", true) self:SetBackdropColor(unpack(E['media'].backdropfadecolor)) end)
+			_G[ChatMenus[i]]:HookScript("OnShow", function(self) self:SetTemplate("Default", true) self:SetBackdropColor(unpack(E["media"].backdropfadecolor)) end)
 		end
 	end
 
-	-- reskin popup buttons
-	for i = 1, 3 do
-		_G["StaticPopup"..i.."CloseButton"]:StripTextures()
-		S:HandleCloseButton(_G["StaticPopup"..i.."CloseButton"]);
+	-- Static Popups
+	for i = 1, 4 do
+		local staticPopup = _G["StaticPopup"..i];
+		local itemFrame = _G["StaticPopup"..i.."ItemFrame"];
+		local itemFrameBox = _G["StaticPopup"..i.."EditBox"];
+		local itemFrameTexture = _G["StaticPopup"..i.."ItemFrameIconTexture"];
+		local itemFrameNormal = _G["StaticPopup"..i.."ItemFrameNormalTexture"];
+		local itemFrameName = _G["StaticPopup"..i.."ItemFrameNameFrame"];
+		local closeButton = _G["StaticPopup"..i.."CloseButton"];
+		local wideBox = _G["StaticPopup"..i.."WideEditBox"];
 
-		for j = 1, 3 do
-			S:HandleButton(_G["StaticPopup"..i.."Button"..j])
-			S:HandleEditBox(_G["StaticPopup"..i.."EditBox"])
-			for k = 1, _G["StaticPopup"..i.."EditBox"]:GetNumRegions() do
-				local region = select(k, _G["StaticPopup"..i.."EditBox"]:GetRegions())
-				if region and region:GetObjectType() == "Texture" then
-					if region:GetTexture() == "Interface\\ChatFrame\\UI-ChatInputBorder-Left" or region:GetTexture() == "Interface\\ChatFrame\\UI-ChatInputBorder-Right" then
-						region:Kill()
-					end
+		staticPopup:SetTemplate("Transparent");
+
+		S:HandleEditBox(itemFrameBox);
+		itemFrameBox.backdrop:Point("TOPLEFT", -2, -4);
+		itemFrameBox.backdrop:Point("BOTTOMRIGHT", 2, 4);
+
+		S:HandleEditBox(_G["StaticPopup"..i.."MoneyInputFrameGold"]);
+		S:HandleEditBox(_G["StaticPopup"..i.."MoneyInputFrameSilver"]);
+		S:HandleEditBox(_G["StaticPopup"..i.."MoneyInputFrameCopper"]);
+
+		for k = 1, itemFrameBox:GetNumRegions() do
+			local region = select(k, itemFrameBox:GetRegions());
+			if(region and region:GetObjectType() == "Texture") then
+				if region:GetTexture() == "Interface\\ChatFrame\\UI-ChatInputBorder-Left" or region:GetTexture() == "Interface\\ChatFrame\\UI-ChatInputBorder-Right" then
+					region:Kill();
 				end
 			end
-			S:HandleEditBox(_G["StaticPopup"..i.."MoneyInputFrameGold"])
-			S:HandleEditBox(_G["StaticPopup"..i.."MoneyInputFrameSilver"])
-			S:HandleEditBox(_G["StaticPopup"..i.."MoneyInputFrameCopper"])
-			_G["StaticPopup"..i.."EditBox"].backdrop:Point("TOPLEFT", -2, -4)
-			_G["StaticPopup"..i.."EditBox"].backdrop:Point("BOTTOMRIGHT", 2, 4)
-			_G["StaticPopup"..i.."ItemFrameNameFrame"]:Kill()
-			_G["StaticPopup"..i.."ItemFrame"]:GetNormalTexture():Kill()
-			_G["StaticPopup"..i.."ItemFrame"]:SetTemplate("Default")
-			_G["StaticPopup"..i.."ItemFrame"]:StyleButton()
-			_G["StaticPopup"..i.."ItemFrameIconTexture"]:SetTexCoord(unpack(E.TexCoords))
-			_G["StaticPopup"..i.."ItemFrameIconTexture"]:SetInside()
 		end
 
-		select(8, _G["StaticPopup"..i.."WideEditBox"]:GetRegions()):Hide();
-		S:HandleEditBox(_G["StaticPopup"..i.."WideEditBox"]);
-		_G["StaticPopup"..i.."WideEditBox"]:Height(22);
+		closeButton:StripTextures();
+		S:HandleCloseButton(closeButton);
+
+		itemFrame:GetNormalTexture():Kill();
+		itemFrame:SetTemplate();
+		itemFrame:StyleButton();
+
+		itemFrameTexture:SetTexCoord(unpack(E.TexCoords));
+		itemFrameTexture:SetInside();
+
+		itemFrameNormal:SetAlpha(0);
+		itemFrameName:Kill();
+
+		select(8, wideBox:GetRegions()):Hide();
+		S:HandleEditBox(wideBox);
+		wideBox:Height(22);
+
+		for j = 1, 3 do
+			S:HandleButton(_G["StaticPopup"..i.."Button"..j]);
+		end
 	end
 
 	-- reskin all esc/menu buttons
@@ -189,6 +204,24 @@ local function LoadSkin()
 		self:StopMovingOrSizing()
 	end)
 
+	-- Declension frame
+	if GetLocale() == "ruRU" then
+		DeclensionFrame:SetTemplate("Transparent");
+
+		S:HandleNextPrevButton(DeclensionFrameSetPrev);
+		S:HandleNextPrevButton(DeclensionFrameSetNext);
+		S:HandleButton(DeclensionFrameOkayButton);
+		S:HandleButton(DeclensionFrameCancelButton);
+
+		for i = 1, RUSSIAN_DECLENSION_PATTERNS do
+			local editBox = _G["DeclensionFrameDeclension"..i.."Edit"];
+			if editBox then
+				editBox:StripTextures();
+				S:HandleEditBox(editBox);
+			end
+		end
+	end
+
 	-- mac menu/option panel, made by affli.
 	if IsMacClient() then
 		S:HandleButton(GameMenuButtonMacOptions);
@@ -221,14 +254,14 @@ local function LoadSkin()
 		S:HandleButton(MacOptionsButtonCompress)
 
 		--Reposition and resize buttons
-		local tPoint, tRTo, tRP, _, tY =  MacOptionsButtonCompress:GetPoint()
+		local tPoint, tRTo, tRP, _, tY = MacOptionsButtonCompress:GetPoint()
 		MacOptionsButtonCompress:SetWidth(136)
 		MacOptionsButtonCompress:ClearAllPoints()
 		MacOptionsButtonCompress:Point(tPoint, tRTo, tRP, 4, tY)
 
 		MacOptionsFrameCancel:SetWidth(96)
 		MacOptionsFrameCancel:SetHeight(22)
-		tPoint, tRTo, tRP, _, tY =  MacOptionsFrameCancel:GetPoint()
+		tPoint, tRTo, tRP, _, tY = MacOptionsFrameCancel:GetPoint()
 		MacOptionsFrameCancel:ClearAllPoints()
 		MacOptionsFrameCancel:Point(tPoint, tRTo, tRP, -14, tY)
 
@@ -273,20 +306,6 @@ local function LoadSkin()
 	OpacityFrame:SetTemplate("Transparent")
 
 	S:HandleSliderFrame(OpacityFrameSlider);
-
-	WatchFrameCollapseExpandButton:StripTextures()
-	S:HandleCloseButton(WatchFrameCollapseExpandButton)
-	WatchFrameCollapseExpandButton.backdrop:SetAllPoints()
-	WatchFrameCollapseExpandButton.text:SetText('-')
-	WatchFrameCollapseExpandButton:SetFrameStrata('MEDIUM')
-
-	hooksecurefunc('WatchFrame_Expand', function()
-		WatchFrameCollapseExpandButton.text:SetText('-')
-	end)
-
-	hooksecurefunc('WatchFrame_Collapse', function()
-		WatchFrameCollapseExpandButton.text:SetText('+')
-	end)
 
 	--Chat Config
 	ChatConfigFrame:StripTextures();
@@ -457,67 +476,49 @@ local function LoadSkin()
 		end
 	end)
 
-	local function SkinWatchFrameItems()
-		for i=1, WATCHFRAME_NUM_ITEMS do
-			local button = _G["WatchFrameItem"..i]
-			if not button.skinned then
-				button:CreateBackdrop('Default')
-				button.backdrop:SetAllPoints()
-				button:StyleButton()
-				_G["WatchFrameItem"..i.."NormalTexture"]:SetAlpha(0)
-				_G["WatchFrameItem"..i.."IconTexture"]:SetInside()
-				_G["WatchFrameItem"..i.."IconTexture"]:SetTexCoord(unpack(E.TexCoords))
-				E:RegisterCooldown(_G["WatchFrameItem"..i.."Cooldown"])
-				button.skinned = true
+	local frames = {
+		"VideoOptionsFrameCategoryFrame",
+		"VideoOptionsFramePanelContainer",
+		"VideoOptionsResolutionPanelBrightness",
+		"AudioOptionsFrameCategoryFrame",
+		"AudioOptionsFramePanelContainer",
+		"InterfaceOptionsFrameCategories",
+		"InterfaceOptionsFramePanelContainer",
+		"InterfaceOptionsFrameAddOns",
+		"AudioOptionsSoundPanelPlayback",
+		"AudioOptionsSoundPanelVolume",
+		"AudioOptionsSoundPanelHardware",
+		"VideoOptionsEffectsPanelQuality",
+		"VideoOptionsEffectsPanelShaders",
+	}
+	for i = 1, getn(frames) do
+		local SkinFrames = _G[frames[i]]
+		if SkinFrames then
+			SkinFrames:StripTextures()
+			SkinFrames:CreateBackdrop("Transparent")
+			if SkinFrames ~= _G["VideoOptionsFramePanelContainer"] and SkinFrames ~= _G["InterfaceOptionsFramePanelContainer"] then
+				SkinFrames.backdrop:Point("TOPLEFT",-1,0)
+				SkinFrames.backdrop:Point("BOTTOMRIGHT",0,1)
+			else
+				SkinFrames.backdrop:Point("TOPLEFT", 0, 0)
+				SkinFrames.backdrop:Point("BOTTOMRIGHT", 0, 0)
 			end
 		end
 	end
-
-	WatchFrame:HookScript("OnEvent", SkinWatchFrameItems)
-
-    local frames = {
-        "VideoOptionsFrameCategoryFrame",
-        "VideoOptionsFramePanelContainer",
-		"VideoOptionsResolutionPanelBrightness",
-		"AudioOptionsFrameCategoryFrame",
-        "AudioOptionsFramePanelContainer",
-        "InterfaceOptionsFrameCategories",
-        "InterfaceOptionsFramePanelContainer",
-        "InterfaceOptionsFrameAddOns",
-		"AudioOptionsSoundPanelPlayback",
-        "AudioOptionsSoundPanelVolume",
-        "AudioOptionsSoundPanelHardware",
-		"VideoOptionsEffectsPanelQuality",
-		"VideoOptionsEffectsPanelShaders",
-    }
-    for i = 1, getn(frames) do
-        local SkinFrames = _G[frames[i]]
-        if SkinFrames then
-            SkinFrames:StripTextures()
-            SkinFrames:CreateBackdrop("Transparent")
-            if SkinFrames ~= _G["VideoOptionsFramePanelContainer"] and SkinFrames ~= _G["InterfaceOptionsFramePanelContainer"] then
-                SkinFrames.backdrop:Point("TOPLEFT",-1,0)
-                SkinFrames.backdrop:Point("BOTTOMRIGHT",0,1)
-            else
-                SkinFrames.backdrop:Point("TOPLEFT", 0, 0)
-                SkinFrames.backdrop:Point("BOTTOMRIGHT", 0, 0)
-            end
-        end
-    end
-    local interfacetab = {
-        "InterfaceOptionsFrameTab1",
-        "InterfaceOptionsFrameTab2",
-    }
+	local interfacetab = {
+		"InterfaceOptionsFrameTab1",
+		"InterfaceOptionsFrameTab2",
+	}
 	for i = 1, #interfacetab do
-        local itab = _G[interfacetab[i]];
-        if(itab) then
-            itab:StripTextures();
-            S:HandleTab(itab);
+		local itab = _G[interfacetab[i]];
+		if(itab) then
+			itab:StripTextures();
+			S:HandleTab(itab);
 			itab.backdrop:SetTemplate("Transparent");
 			itab.backdrop:Point("TOPLEFT", 10, E.PixelMode and -4 or -6);
 			itab.backdrop:Point("BOTTOMRIGHT", -10, 1);
-        end
-    end
+		end
+	end
 
 	local maxButtons = (InterfaceOptionsFrameAddOns:GetHeight() - 8) / InterfaceOptionsFrameAddOns.buttonHeight;
 	for i = 1, maxButtons do
@@ -542,187 +543,187 @@ local function LoadSkin()
 		end);
 	end
 
-    InterfaceOptionsFrameTab1:ClearAllPoints()
-    InterfaceOptionsFrameTab1:SetPoint("BOTTOMLEFT",InterfaceOptionsFrameCategories,"TOPLEFT",-11,-2)
-    VideoOptionsFrameDefaults:ClearAllPoints()
-    InterfaceOptionsFrameDefaults:ClearAllPoints()
-    InterfaceOptionsFrameCancel:ClearAllPoints()
-    VideoOptionsFrameDefaults:SetPoint("TOPLEFT",VideoOptionsFrameCategoryFrame,"BOTTOMLEFT",-1,-5)
-    InterfaceOptionsFrameDefaults:SetPoint("TOPLEFT",InterfaceOptionsFrameCategories,"BOTTOMLEFT",-1,-5)
-    InterfaceOptionsFrameCancel:SetPoint("TOPRIGHT",InterfaceOptionsFramePanelContainer,"BOTTOMRIGHT",0,-6)
+	InterfaceOptionsFrameTab1:ClearAllPoints()
+	InterfaceOptionsFrameTab1:SetPoint("BOTTOMLEFT",InterfaceOptionsFrameCategories,"TOPLEFT",-11,-2)
+	VideoOptionsFrameDefaults:ClearAllPoints()
+	InterfaceOptionsFrameDefaults:ClearAllPoints()
+	InterfaceOptionsFrameCancel:ClearAllPoints()
+	VideoOptionsFrameDefaults:SetPoint("TOPLEFT",VideoOptionsFrameCategoryFrame,"BOTTOMLEFT",-1,-5)
+	InterfaceOptionsFrameDefaults:SetPoint("TOPLEFT",InterfaceOptionsFrameCategories,"BOTTOMLEFT",-1,-5)
+	InterfaceOptionsFrameCancel:SetPoint("TOPRIGHT",InterfaceOptionsFramePanelContainer,"BOTTOMRIGHT",0,-6)
 	InterfaceOptionsFrameCategoriesList:StripTextures();
 	S:HandleScrollBar(InterfaceOptionsFrameCategoriesListScrollBar);
 	InterfaceOptionsFrameAddOnsList:StripTextures();
 	S:HandleScrollBar(InterfaceOptionsFrameAddOnsListScrollBar);
 
-    local interfacecheckbox = {
-        "ControlsPanelStickyTargeting",
-        "ControlsPanelAutoDismount",
-        "ControlsPanelAutoClearAFK",
-        "ControlsPanelBlockTrades",
-        "ControlsPanelBlockGuildInvites",
-        "ControlsPanelLootAtMouse",
-        "ControlsPanelAutoLootCorpse",
-        "CombatPanelAttackOnAssist",
-        "CombatPanelAutoRange",
+	local interfacecheckbox = {
+		"ControlsPanelStickyTargeting",
+		"ControlsPanelAutoDismount",
+		"ControlsPanelAutoClearAFK",
+		"ControlsPanelBlockTrades",
+		"ControlsPanelBlockGuildInvites",
+		"ControlsPanelLootAtMouse",
+		"ControlsPanelAutoLootCorpse",
+		"CombatPanelAttackOnAssist",
+		"CombatPanelAutoRange",
 		"CombatPanelStopAutoAttack",
-        "CombatPanelNameplateClassColors",
+		"CombatPanelNameplateClassColors",
 		"CombatPanelAutoSelfCast",
-        "CombatPanelTargetOfTarget",
-        "CombatPanelEnemyCastBarsOnPortrait",
-        "CombatPanelEnemyCastBarsOnNameplates",
-        "DisplayPanelShowCloak",
-        "DisplayPanelShowHelm",
-        "DisplayPanelShowAggroPercentage",
-        "DisplayPanelPlayAggroSounds",
-        "DisplayPanelDetailedLootInfo",
-        "DisplayPanelShowFreeBagSpace",
-        "DisplayPanelCinematicSubtitles",
-        "DisplayPanelRotateMinimap",
-        "DisplayPanelScreenEdgeFlash",
+		"CombatPanelTargetOfTarget",
+		"CombatPanelEnemyCastBarsOnPortrait",
+		"CombatPanelEnemyCastBarsOnNameplates",
+		"DisplayPanelShowCloak",
+		"DisplayPanelShowHelm",
+		"DisplayPanelShowAggroPercentage",
+		"DisplayPanelPlayAggroSounds",
+		"DisplayPanelDetailedLootInfo",
+		"DisplayPanelShowFreeBagSpace",
+		"DisplayPanelCinematicSubtitles",
+		"DisplayPanelRotateMinimap",
+		"DisplayPanelScreenEdgeFlash",
 		"DisplayPanelShowClock",
 		"DisplayPanelColorblindMode",
 		"DisplayPanelShowItemLevel",
 		"ObjectivesPanelInstantQuestText",
-        "ObjectivesPanelAutoQuestTracking",
-        "ObjectivesPanelAutoQuestProgress",
-        "ObjectivesPanelMapQuestDifficulty",
-        "ObjectivesPanelAdvancedWorldMap",
-        "ObjectivesPanelWatchFrameWidth",
-        "SocialPanelProfanityFilter",
-        "SocialPanelSpamFilter",
-        "SocialPanelChatBubbles",
-        "SocialPanelPartyChat",
-        "SocialPanelChatHoverDelay",
-        "SocialPanelGuildMemberAlert",
+		"ObjectivesPanelAutoQuestTracking",
+		"ObjectivesPanelAutoQuestProgress",
+		"ObjectivesPanelMapQuestDifficulty",
+		"ObjectivesPanelAdvancedWorldMap",
+		"ObjectivesPanelWatchFrameWidth",
+		"SocialPanelProfanityFilter",
+		"SocialPanelSpamFilter",
+		"SocialPanelChatBubbles",
+		"SocialPanelPartyChat",
+		"SocialPanelChatHoverDelay",
+		"SocialPanelGuildMemberAlert",
 		"SocialPanelGuildRecruitment",
-        "SocialPanelChatMouseScroll",
-        "SocialPanelWholeChatWindowClickable",
-        "ActionBarsPanelLockActionBars",
-        "ActionBarsPanelSecureAbilityToggle",
-        "ActionBarsPanelAlwaysShowActionBars",
-        "ActionBarsPanelBottomLeft",
-        "ActionBarsPanelBottomRight",
-        "ActionBarsPanelRight",
-        "ActionBarsPanelRightTwo",
-        "NamesPanelMyName",
-        "NamesPanelFriendlyPlayerNames",
-        "NamesPanelFriendlyPets",
-        "NamesPanelFriendlyGuardians",
-        "NamesPanelFriendlyTotems",
-        "NamesPanelUnitNameplatesFriends",
-        "NamesPanelUnitNameplatesFriendlyGuardians",
-        "NamesPanelUnitNameplatesFriendlyPets",
-        "NamesPanelUnitNameplatesFriendlyTotems",
-        "NamesPanelGuilds",
+		"SocialPanelChatMouseScroll",
+		"SocialPanelWholeChatWindowClickable",
+		"ActionBarsPanelLockActionBars",
+		"ActionBarsPanelSecureAbilityToggle",
+		"ActionBarsPanelAlwaysShowActionBars",
+		"ActionBarsPanelBottomLeft",
+		"ActionBarsPanelBottomRight",
+		"ActionBarsPanelRight",
+		"ActionBarsPanelRightTwo",
+		"NamesPanelMyName",
+		"NamesPanelFriendlyPlayerNames",
+		"NamesPanelFriendlyPets",
+		"NamesPanelFriendlyGuardians",
+		"NamesPanelFriendlyTotems",
+		"NamesPanelUnitNameplatesFriends",
+		"NamesPanelUnitNameplatesFriendlyGuardians",
+		"NamesPanelUnitNameplatesFriendlyPets",
+		"NamesPanelUnitNameplatesFriendlyTotems",
+		"NamesPanelGuilds",
 		"NamesPanelNPCNames",
 		"NamesPanelUnitNameplatesAllowOverlap",
-        "NamesPanelTitles",
-        "NamesPanelNonCombatCreature",
-        "NamesPanelEnemyPlayerNames",
-        "NamesPanelEnemyPets",
-        "NamesPanelEnemyGuardians",
-        "NamesPanelEnemyTotems",
-        "NamesPanelUnitNameplatesEnemyPets",
-        "NamesPanelUnitNameplatesEnemies",
-        "NamesPanelUnitNameplatesEnemyGuardians",
-        "NamesPanelUnitNameplatesEnemyTotems",
-        "CombatTextPanelTargetDamage",
-        "CombatTextPanelPeriodicDamage",
-        "CombatTextPanelPetDamage",
-        "CombatTextPanelHealing",
-        "CombatTextPanelTargetEffects",
-        "CombatTextPanelOtherTargetEffects",
-        "CombatTextPanelEnableFCT",
-        "CombatTextPanelDodgeParryMiss",
-        "CombatTextPanelDamageReduction",
-        "CombatTextPanelRepChanges",
-        "CombatTextPanelReactiveAbilities",
-        "CombatTextPanelFriendlyHealerNames",
-        "CombatTextPanelCombatState",
-        "CombatTextPanelComboPoints",
-        "CombatTextPanelLowManaHealth",
-        "CombatTextPanelEnergyGains",
-        "CombatTextPanelPeriodicEnergyGains",
-        "CombatTextPanelHonorGains",
-        "CombatTextPanelAuras",
-        "BuffsPanelBuffDurations",
-        "BuffsPanelDispellableDebuffs",
-        "BuffsPanelCastableBuffs",
-        "BuffsPanelConsolidateBuffs",
-        "BuffsPanelShowCastableDebuffs",
-        "CameraPanelFollowTerrain",
-        "CameraPanelHeadBob",
-        "CameraPanelWaterCollision",
-        "CameraPanelSmartPivot",
-        "MousePanelInvertMouse",
-        "MousePanelClickToMove",
-        "MousePanelWoWMouse",
-        "HelpPanelShowTutorials",
-        "HelpPanelLoadingScreenTips",
-        "HelpPanelEnhancedTooltips",
-        "HelpPanelBeginnerTooltips",
-        "HelpPanelShowLuaErrors",
-        "StatusTextPanelPlayer",
-        "StatusTextPanelPet",
-        "StatusTextPanelParty",
-        "StatusTextPanelTarget",
-        "StatusTextPanelPercentages",
-        "StatusTextPanelXP",
-        "UnitFramePanelPartyBackground",
-        "UnitFramePanelPartyPets",
-        "UnitFramePanelArenaEnemyFrames",
-        "UnitFramePanelArenaEnemyCastBar",
-        "UnitFramePanelArenaEnemyPets",
+		"NamesPanelTitles",
+		"NamesPanelNonCombatCreature",
+		"NamesPanelEnemyPlayerNames",
+		"NamesPanelEnemyPets",
+		"NamesPanelEnemyGuardians",
+		"NamesPanelEnemyTotems",
+		"NamesPanelUnitNameplatesEnemyPets",
+		"NamesPanelUnitNameplatesEnemies",
+		"NamesPanelUnitNameplatesEnemyGuardians",
+		"NamesPanelUnitNameplatesEnemyTotems",
+		"CombatTextPanelTargetDamage",
+		"CombatTextPanelPeriodicDamage",
+		"CombatTextPanelPetDamage",
+		"CombatTextPanelHealing",
+		"CombatTextPanelTargetEffects",
+		"CombatTextPanelOtherTargetEffects",
+		"CombatTextPanelEnableFCT",
+		"CombatTextPanelDodgeParryMiss",
+		"CombatTextPanelDamageReduction",
+		"CombatTextPanelRepChanges",
+		"CombatTextPanelReactiveAbilities",
+		"CombatTextPanelFriendlyHealerNames",
+		"CombatTextPanelCombatState",
+		"CombatTextPanelComboPoints",
+		"CombatTextPanelLowManaHealth",
+		"CombatTextPanelEnergyGains",
+		"CombatTextPanelPeriodicEnergyGains",
+		"CombatTextPanelHonorGains",
+		"CombatTextPanelAuras",
+		"BuffsPanelBuffDurations",
+		"BuffsPanelDispellableDebuffs",
+		"BuffsPanelCastableBuffs",
+		"BuffsPanelConsolidateBuffs",
+		"BuffsPanelShowCastableDebuffs",
+		"CameraPanelFollowTerrain",
+		"CameraPanelHeadBob",
+		"CameraPanelWaterCollision",
+		"CameraPanelSmartPivot",
+		"MousePanelInvertMouse",
+		"MousePanelClickToMove",
+		"MousePanelWoWMouse",
+		"HelpPanelShowTutorials",
+		"HelpPanelLoadingScreenTips",
+		"HelpPanelEnhancedTooltips",
+		"HelpPanelBeginnerTooltips",
+		"HelpPanelShowLuaErrors",
+		"StatusTextPanelPlayer",
+		"StatusTextPanelPet",
+		"StatusTextPanelParty",
+		"StatusTextPanelTarget",
+		"StatusTextPanelPercentages",
+		"StatusTextPanelXP",
+		"UnitFramePanelPartyBackground",
+		"UnitFramePanelPartyPets",
+		"UnitFramePanelArenaEnemyFrames",
+		"UnitFramePanelArenaEnemyCastBar",
+		"UnitFramePanelArenaEnemyPets",
 		"UnitFramePanelPartyInRaid",
 		"UnitFramePanelRaidRange",
-        "UnitFramePanelFullSizeFocusFrame",
+		"UnitFramePanelFullSizeFocusFrame",
 		"FeaturesPanelPreviewTalentChanges",
 		"FeaturesPanelEquipmentManager",
-    }
-    for i = 1, getn(interfacecheckbox) do
-        local icheckbox = _G["InterfaceOptions"..interfacecheckbox[i]]
-        if icheckbox then
-            S:HandleCheckBox(icheckbox)
-        end
-    end
-    local interfacedropdown ={
-        "ControlsPanelAutoLootKeyDropDown",
-        "CombatPanelTOTDropDown",
-        "CombatPanelFocusCastKeyDropDown",
-        "CombatPanelSelfCastKeyDropDown",
-        "DisplayPanelAggroWarningDisplay",
-        "DisplayPanelWorldPVPObjectiveDisplay",
-        "SocialPanelChatStyle",
-        "SocialPanelTimestamps",
-        "CombatTextPanelFCTDropDown",
-        "CameraPanelStyleDropDown",
-        "MousePanelClickMoveStyleDropDown",
-    }
-    for i = 1, getn(interfacedropdown) do
-        local idropdown = _G["InterfaceOptions"..interfacedropdown[i]]
-        if idropdown then
-            S:HandleDropDownBox(idropdown)
-            DropDownList1:SetTemplate("Transparent")
-        end
-    end
+	}
+	for i = 1, getn(interfacecheckbox) do
+		local icheckbox = _G["InterfaceOptions"..interfacecheckbox[i]]
+		if icheckbox then
+			S:HandleCheckBox(icheckbox)
+		end
+	end
+	local interfacedropdown ={
+		"ControlsPanelAutoLootKeyDropDown",
+		"CombatPanelTOTDropDown",
+		"CombatPanelFocusCastKeyDropDown",
+		"CombatPanelSelfCastKeyDropDown",
+		"DisplayPanelAggroWarningDisplay",
+		"DisplayPanelWorldPVPObjectiveDisplay",
+		"SocialPanelChatStyle",
+		"SocialPanelTimestamps",
+		"CombatTextPanelFCTDropDown",
+		"CameraPanelStyleDropDown",
+		"MousePanelClickMoveStyleDropDown",
+	}
+	for i = 1, getn(interfacedropdown) do
+		local idropdown = _G["InterfaceOptions"..interfacedropdown[i]]
+		if idropdown then
+			S:HandleDropDownBox(idropdown)
+			DropDownList1:SetTemplate("Transparent")
+		end
+	end
 
-    S:HandleButton(InterfaceOptionsHelpPanelResetTutorials)
+	S:HandleButton(InterfaceOptionsHelpPanelResetTutorials)
 
-    local optioncheckbox = {
-        "AudioOptionsSoundPanelEnableSound",
-        "AudioOptionsSoundPanelSoundEffects",
-        "AudioOptionsSoundPanelErrorSpeech",
-        "AudioOptionsSoundPanelEmoteSounds",
-        "AudioOptionsSoundPanelPetSounds",
-        "AudioOptionsSoundPanelMusic",
-        "AudioOptionsSoundPanelLoopMusic",
-        "AudioOptionsSoundPanelAmbientSounds",
-        "AudioOptionsSoundPanelSoundInBG",
-        "AudioOptionsSoundPanelReverb",
-        "AudioOptionsSoundPanelHRTF",
-        "AudioOptionsSoundPanelEnableDSPs",
-        "AudioOptionsSoundPanelUseHardware",
+	local optioncheckbox = {
+		"AudioOptionsSoundPanelEnableSound",
+		"AudioOptionsSoundPanelSoundEffects",
+		"AudioOptionsSoundPanelErrorSpeech",
+		"AudioOptionsSoundPanelEmoteSounds",
+		"AudioOptionsSoundPanelPetSounds",
+		"AudioOptionsSoundPanelMusic",
+		"AudioOptionsSoundPanelLoopMusic",
+		"AudioOptionsSoundPanelAmbientSounds",
+		"AudioOptionsSoundPanelSoundInBG",
+		"AudioOptionsSoundPanelReverb",
+		"AudioOptionsSoundPanelHRTF",
+		"AudioOptionsSoundPanelEnableDSPs",
+		"AudioOptionsSoundPanelUseHardware",
 		"VideoOptionsResolutionPanelVSync",
 		"VideoOptionsResolutionPanelTripleBuffer",
 		"VideoOptionsResolutionPanelHardwareCursor",
@@ -736,26 +737,26 @@ local function LoadSkin()
 		"VideoOptionsEffectsPanelFullScreenGlow",
 		"VideoOptionsEffectsPanelDeathEffect",
 		"VideoOptionsEffectsPanelProjectedTextures",
-    }
-    for i = 1, getn(optioncheckbox) do
-        local ocheckbox = _G[optioncheckbox[i]]
-        if ocheckbox then
-            S:HandleCheckBox(ocheckbox)
-        end
-    end
-    local optiondropdown = {
-        "VideoOptionsResolutionPanelResolutionDropDown",
-        "VideoOptionsResolutionPanelRefreshDropDown",
-        "VideoOptionsResolutionPanelMultiSampleDropDown",
-        "AudioOptionsSoundPanelHardwareDropDown",
-    }
-    for i = 1, getn(optiondropdown) do
-        local odropdown = _G[optiondropdown[i]]
-        if odropdown then
-            S:HandleDropDownBox(odropdown,165)
-            DropDownList1:SetTemplate("Transparent")
-        end
-    end
+	}
+	for i = 1, getn(optioncheckbox) do
+		local ocheckbox = _G[optioncheckbox[i]]
+		if ocheckbox then
+			S:HandleCheckBox(ocheckbox)
+		end
+	end
+	local optiondropdown = {
+		"VideoOptionsResolutionPanelResolutionDropDown",
+		"VideoOptionsResolutionPanelRefreshDropDown",
+		"VideoOptionsResolutionPanelMultiSampleDropDown",
+		"AudioOptionsSoundPanelHardwareDropDown",
+	}
+	for i = 1, getn(optiondropdown) do
+		local odropdown = _G[optiondropdown[i]]
+		if odropdown then
+			S:HandleDropDownBox(odropdown,165)
+			DropDownList1:SetTemplate("Transparent")
+		end
+	end
 
 	local sliders = {
 		"VideoOptionsResolutionPanelUIScaleSlider",

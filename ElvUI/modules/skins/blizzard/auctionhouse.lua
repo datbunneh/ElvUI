@@ -1,5 +1,5 @@
 local E, L, V, P, G = unpack(select(2, ...)); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
-local S = E:GetModule('Skins')
+local S = E:GetModule("Skins")
 
 local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.auctionhouse ~= true then return end
@@ -24,17 +24,23 @@ local function LoadSkin()
 	S:HandleCheckBox(IsUsableCheckButton)
 	S:HandleCheckBox(ShowOnPlayerCheckButton)
 
-	AuctionDressUpFrame:StripTextures(true)
-	AuctionDressUpFrame:CreateBackdrop("Transparent")
-	AuctionDressUpFrame.backdrop:Point("TOPLEFT", 1, -3)
-	AuctionDressUpFrame.backdrop:Point("BOTTOMRIGHT", -2, 0)
+	-- DressUpFrame
+	AuctionDressUpFrame:StripTextures();
+	AuctionDressUpFrame:CreateBackdrop("Default");
+
+	SetAuctionDressUpBackground();
+	AuctionDressUpBackgroundTop:SetDesaturated(true);
+	AuctionDressUpBackgroundBot:SetDesaturated(true);
+
+	AuctionDressUpFrame.backdrop:SetOutside(AuctionDressUpBackgroundTop, nil, nil, AuctionDressUpBackgroundBot);
 
 	S:HandleRotateButton(AuctionDressUpModelRotateLeftButton);
-	AuctionDressUpModelRotateLeftButton:SetPoint("TOPLEFT", AuctionDressUpFrame, 5, -15);
+	AuctionDressUpModelRotateLeftButton:SetPoint("TOPLEFT", AuctionDressUpFrame, 8, -17);
 	S:HandleRotateButton(AuctionDressUpModelRotateRightButton);
 	AuctionDressUpModelRotateRightButton:SetPoint("TOPLEFT", AuctionDressUpModelRotateLeftButton, "TOPRIGHT", 3, 0);
-	S:HandleButton(AuctionDressUpFrameResetButton)
-	S:HandleCloseButton(AuctionDressUpFrameCloseButton)
+
+	S:HandleButton(AuctionDressUpFrameResetButton);
+	S:HandleCloseButton(AuctionDressUpFrameCloseButton, AuctionDressUpFrame.backdrop);
 
 	--Progress Frame
 	AuctionProgressFrame:StripTextures()
@@ -102,7 +108,7 @@ local function LoadSkin()
 
 	AuctionsItemButton:HookScript("OnEvent", function(self, event)
 		self:SetBackdropBorderColor(unpack(E["media"].bordercolor))
-		if(event == 'NEW_AUCTION_UPDATE' and self:GetNormalTexture()) then
+		if(event == "NEW_AUCTION_UPDATE" and self:GetNormalTexture()) then
 			self:GetNormalTexture():SetTexCoord(unpack(E.TexCoords));
 			self:GetNormalTexture():SetInside();
 		end

@@ -77,8 +77,8 @@ local function SetOutside(obj, anchor, xOffset, yOffset, anchor2)
 		obj:ClearAllPoints()
 	end
 
-	obj:Point('TOPLEFT', anchor, 'TOPLEFT', -xOffset, yOffset)
-	obj:Point('BOTTOMRIGHT', anchor2 or anchor, 'BOTTOMRIGHT', xOffset, -yOffset)
+	obj:Point("TOPLEFT", anchor, "TOPLEFT", -xOffset, yOffset)
+	obj:Point("BOTTOMRIGHT", anchor2 or anchor, "BOTTOMRIGHT", xOffset, -yOffset)
 end
 
 local function SetInside(obj, anchor, xOffset, yOffset, anchor2)
@@ -91,15 +91,13 @@ local function SetInside(obj, anchor, xOffset, yOffset, anchor2)
 		obj:ClearAllPoints()
 	end
 
-	obj:Point('TOPLEFT', anchor, 'TOPLEFT', xOffset, -yOffset)
-	obj:Point('BOTTOMRIGHT', anchor2 or anchor, 'BOTTOMRIGHT', -xOffset, yOffset)
+	obj:Point("TOPLEFT", anchor, "TOPLEFT", xOffset, -yOffset)
+	obj:Point("BOTTOMRIGHT", anchor2 or anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
 local function SetTemplate(f, t, glossTex, ignoreUpdates, forcePixelMode)
 	GetTemplate(t, f.forcePixelMode or forcePixelMode)
-	if(E.global.tukuiMode) then
-		glossTex = nil;
-	end
+
 	if(t) then
 		f.template = t;
 	end
@@ -121,44 +119,48 @@ local function SetTemplate(f, t, glossTex, ignoreUpdates, forcePixelMode)
 		bgFile = E.media.glossTex;
 	end
 
-	if((E.private.general.pixelPerfect and not E.global.tukuiMode) or f.forcePixelMode) then
-		f:SetBackdrop({
-			bgFile = bgFile,
-			edgeFile = E["media"].blankTex,
-			tile = false, tileSize = 0, edgeSize = E.mult,
-			insets = {left = 0, right = 0, top = 0, bottom = 0}
-		});
+	if(t ~= "NoBackdrop") then
+		if(E.private.general.pixelPerfect or f.forcePixelMode) then
+			f:SetBackdrop({
+				bgFile = bgFile,
+				edgeFile = E["media"].blankTex,
+				tile = false, tileSize = 0, edgeSize = E.mult,
+				insets = {left = 0, right = 0, top = 0, bottom = 0}
+			});
+		else
+			f:SetBackdrop({
+				bgFile = bgFile,
+				edgeFile = E["media"].blankTex,
+				tile = false, tileSize = 0, edgeSize = E.mult,
+				insets = {left = -E.mult, right = -E.mult, top = -E.mult, bottom = -E.mult}
+			});
+		end
+
+		if not f.oborder and not f.iborder and not E.private.general.pixelPerfect and not f.forcePixelMode then
+			local border = CreateFrame("Frame", nil, f)
+			border:SetInside(f, E.mult, E.mult)
+			border:SetBackdrop({
+				edgeFile = E["media"].blankTex,
+				edgeSize = E.mult,
+				insets = {left = E.mult, right = E.mult, top = E.mult, bottom = E.mult}
+			});
+			border:SetBackdropBorderColor(0, 0, 0, 1)
+			f.iborder = border
+
+			if f.oborder then return end
+			local border = CreateFrame("Frame", nil, f)
+			border:SetOutside(f, E.mult, E.mult)
+			border:SetFrameLevel(f:GetFrameLevel() + 1)
+			border:SetBackdrop({
+				edgeFile = E["media"].blankTex,
+				edgeSize = E.mult,
+				insets = {left = E.mult, right = E.mult, top = E.mult, bottom = E.mult}
+			});
+			border:SetBackdropBorderColor(0, 0, 0, 1)
+			f.oborder = border
+		end
 	else
-		f:SetBackdrop({
-			bgFile = bgFile,
-			edgeFile = E["media"].blankTex,
-			tile = false, tileSize = 0, edgeSize = E.mult,
-			insets = {left = -E.mult, right = -E.mult, top = -E.mult, bottom = -E.mult}
-		});
-	end
-
-	if not f.oborder and not f.iborder and (not E.private.general.pixelPerfect or E.global.tukuiMode) and not f.forcePixelMode then
-		local border = CreateFrame("Frame", nil, f)
-		border:SetInside(f, E.mult, E.mult)
-		border:SetBackdrop({
-			edgeFile = E["media"].blankTex,
-			edgeSize = E.mult,
-			insets = {left = E.mult, right = E.mult, top = E.mult, bottom = E.mult}
-		});
-		border:SetBackdropBorderColor(0, 0, 0, 1)
-		f.iborder = border
-
-		if f.oborder then return end
-		local border = CreateFrame("Frame", nil, f)
-		border:SetOutside(f, E.mult, E.mult)
-		border:SetFrameLevel(f:GetFrameLevel() + 1)
-		border:SetBackdrop({
-			edgeFile = E["media"].blankTex,
-			edgeSize = E.mult,
-			insets = {left = E.mult, right = E.mult, top = E.mult, bottom = E.mult}
-		});
-		border:SetBackdropBorderColor(0, 0, 0, 1)
-		f.oborder = border
+		f:SetBackdrop(nil);
 	end
 
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
@@ -223,11 +225,11 @@ local function StripTextures(object, kill)
 	for i=1, object:GetNumRegions() do
 		local region = select(i, object:GetRegions())
 		if region and region:GetObjectType() == "Texture" then
-			if kill and type(kill) == 'boolean' then
+			if kill and type(kill) == "boolean" then
 				region:Kill()
 			elseif region:GetDrawLayer() == kill then
 				region:SetTexture(nil)
-			elseif kill and type(kill) == 'string' and region:GetTexture() ~= kill then
+			elseif kill and type(kill) == "string" and region:GetTexture() ~= kill then
 				region:SetTexture(nil)
 			else
 				region:SetTexture(nil)
@@ -241,17 +243,18 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 	fs.fontSize = fontSize
 	fs.fontStyle = fontStyle
 
-	if not font then font = LSM:Fetch("font", E.db['general'].font) end
-	if not fontSize then fontSize = E.db.general.fontSize end
-	if fontStyle == 'OUTLINE' and E.db.general.font:lower():find('pixel') then
+	font = font or LSM:Fetch("font", E.db["general"].font)
+	fontSize = fontSize or E.db.general.fontSize
+
+	if fontStyle == "OUTLINE" and (E.db.general.font == "Homespun") then
 		if (fontSize > 10 and not fs.fontSize) then
-			fontStyle = 'MONOCHROMEOUTLINE'
+			fontStyle = "MONOCHROMEOUTLINE"
 			fontSize = 10
 		end
 	end
 
 	fs:SetFont(font, fontSize, fontStyle)
-	if fontStyle then
+	if fontStyle and (fontStyle ~= "NONE") then
 		fs:SetShadowColor(0, 0, 0, 0.2)
 	else
 		fs:SetShadowColor(0, 0, 0, 1)

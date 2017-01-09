@@ -33,6 +33,8 @@ local menuList = {
 	func = function() ToggleFrame(QuestLogFrame); end},
 	{text = SOCIAL_BUTTON,
 	func = function() ToggleFriendsFrame(1); end},
+	{text = L["Calendar"],
+	func = function() GameTimeFrame:Click(); end},
 	{text = L["Farm Mode"],
 	func = FarmMode},
 	{text = TIMEMANAGER_TITLE,
@@ -84,7 +86,7 @@ end
 function M:PLAYER_ENTERING_WORLD()
 	self:Update_ZoneText()
 
-	MinimapPing:HookScript("OnUpdate", function(self, elapsed)
+	MinimapPing:HookScript("OnUpdate", function(self)
 		if self.fadeOut or self.timer > MINIMAPPING_FADE_TIMER then
 			Minimap_SetPing(Minimap:GetPingPosition())
 		end
@@ -115,27 +117,43 @@ function M:Minimap_OnMouseWheel(d)
 end
 
 function M:Update_ZoneText()
-	if E.db.general.minimap.locationText == 'HIDE' or not E.private.general.minimap.enable then return; end
+	if E.db.general.minimap.locationText == "HIDE" or not E.private.general.minimap.enable then return; end
 	Minimap.location:SetText(strsub(GetMinimapZoneText(),1,46))
 	Minimap.location:SetTextColor(self:GetLocTextColor())
+	Minimap.location:FontTemplate(E.LSM:Fetch("font", E.db.general.minimap.locationFont), E.db.general.minimap.locationFontSize, E.db.general.minimap.locationFontOutline);
 end
 
 function M:PLAYER_REGEN_ENABLED()
-	self:UnregisterEvent('PLAYER_REGEN_ENABLED')
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UpdateSettings()
 end
 
+local isResetting;
+local function ResetZoom()
+	Minimap:SetZoom(0);
+	MinimapZoomIn:Enable();
+	MinimapZoomOut:Disable();
+	isResetting = false;
+end
+local function SetupZoomReset()
+	if(E.db.general.minimap.resetZoom.enable and not isResetting) then
+		isResetting = true;
+		E:Delay(E.db.general.minimap.resetZoom.time, ResetZoom);
+	end
+end
+hooksecurefunc(Minimap, "SetZoom", SetupZoomReset);
+
 function M:UpdateSettings()
 	if InCombatLockdown() then
-		self:RegisterEvent('PLAYER_REGEN_ENABLED')
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
 	E.MinimapSize = E.private.general.minimap.enable and E.db.general.minimap.size or Minimap:GetWidth() + 10;
 	E.MinimapWidth = E.MinimapSize;
 	E.MinimapHeight = E.MinimapSize;
 
-	if(E.db.general.reminder.enable and not E.global.tukuiMode) then
-		E.RBRWidth = (E.MinimapHeight + (5*E.Border) + E.Border*2 - (E.Spacing*5)) / (5 + 1);
+	if(E.db.general.reminder.enable) then
+		E.RBRWidth = (E.MinimapHeight + ((E.Border - E.Spacing*3) * 5) + E.Border*2) / 6;
 	else
 		E.RBRWidth = 0;
 	end
@@ -253,7 +271,7 @@ function M:UpdateSettings()
 		MiniMapLFGFrame:ClearAllPoints()
 		MiniMapLFGFrame:Point(pos, Minimap, pos, E.db.general.minimap.icons.lfgEye.xOffset or 3, E.db.general.minimap.icons.lfgEye.yOffset or 0)
 		MiniMapLFGFrame:SetScale(scale)
-		LFDSearchStatus:SetScale(1/scale)
+		LFDSearchStatus:SetScale(scale)
 	end
 
 	if MiniMapBattlefieldFrame then
@@ -275,7 +293,7 @@ function M:UpdateSettings()
 	end
 
 	if(ElvConfigToggle) then
-		if(E.db.general.reminder.enable and E.db.datatexts.minimapPanels and E.private.general.minimap.enable and not E.global.tukuiMode) then
+		if(E.db.general.reminder.enable and E.db.datatexts.minimapPanels and E.private.general.minimap.enable) then
 			ElvConfigToggle:Show();
 			ElvConfigToggle:Width(E.RBRWidth);
 		else

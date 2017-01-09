@@ -19,7 +19,6 @@ function UF:Construct_HealthBar(frame, bg, text, textPos)
 	local health = CreateFrame("StatusBar", nil, frame);
 	UF["statusbars"][health] = true;
 
-	health:SetFrameStrata("LOW");
 	health:SetFrameLevel(10);
 	health.PostUpdate = self.PostUpdateHealth;
 
@@ -33,8 +32,6 @@ function UF:Construct_HealthBar(frame, bg, text, textPos)
 	if(text) then
 		health.value = frame.RaisedElementParent:CreateFontString(nil, "OVERLAY");
 		UF:Configure_FontString(health.value);
-
-		health.value:SetParent(frame);
 
 		local x = -2;
 		if(textPos == "LEFT") then
@@ -52,6 +49,7 @@ function UF:Construct_HealthBar(frame, bg, text, textPos)
 end
 
 function UF:Configure_HealthBar(frame)
+	if(not frame.VARIABLES_SET) then return; end
 	local db = frame.db;
 	local health = frame.Health;
 
@@ -60,13 +58,6 @@ function UF:Configure_HealthBar(frame)
 
 	if(health.value) then
 		local attachPoint = self:GetObjectAnchorPoint(frame, db.health.attachTextTo);
-		if(E.global.tukuiMode and frame.InfoPanel and frame.InfoPanel:IsShown()) then
-			if(frame.unitframeType == "raid") then
-				attachPoint = frame.Health;
-			else
-				attachPoint = frame.InfoPanel;
-			end
-		end
 		health.value:ClearAllPoints();
 		health.value:Point(db.health.position, attachPoint, db.health.position, db.health.xOffset, db.health.yOffset);
 		frame:Tag(health.value, db.health.text_format);
@@ -186,7 +177,7 @@ function UF:PostUpdateHealth(unit, min, max)
 
 	local r, g, b = self:GetStatusBarColor();
 	local colors = E.db["unitframe"]["colors"];
-	if((colors.healthclass == true and colors.colorhealthbyvalue == true) or (colors.colorhealthbyvalue and parent.isForced) and not (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit))) then
+	if(((colors.healthclass == true and colors.colorhealthbyvalue == true) or (colors.colorhealthbyvalue and parent.isForced)) and not (UnitIsTapped(unit) and not UnitIsTappedByPlayer(unit))) then
 		local newr, newg, newb = ElvUF.ColorGradient(min, max, 1, 0, 0, 1, 1, 0, r, g, b);
 
 		self:SetStatusBarColor(newr, newg, newb);

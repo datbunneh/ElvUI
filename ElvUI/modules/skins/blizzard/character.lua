@@ -1,5 +1,5 @@
 local E, L, V, P, G = unpack(select(2, ...)); -- Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB
-local S = E:GetModule('Skins')
+local S = E:GetModule("Skins")
 
 local find = string.find;
 
@@ -7,31 +7,32 @@ local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.character ~= true then return end
 
 	CharacterFrame:StripTextures(true)
-	CharacterFrame:CreateBackdrop('Transparent')
-	CharacterFrame.backdrop:Point('TOPLEFT', 10, -12)
-	CharacterFrame.backdrop:Point('BOTTOMRIGHT', -32, 76)
+	CharacterFrame:CreateBackdrop("Transparent")
+	CharacterFrame.backdrop:Point("TOPLEFT", 10, -12)
+	CharacterFrame.backdrop:Point("BOTTOMRIGHT", -32, 76)
 
-	S:HandleCloseButton(CharacterFrameCloseButton)
+	S:HandleCloseButton(CharacterFrameCloseButton);
+	CharacterFrameCloseButton:Point("CENTER", CharacterFrame, "TOPRIGHT", -45, -25);
 
 	for i = 1, #CHARACTERFRAME_SUBFRAMES do
 		local tab = _G["CharacterFrameTab"..i];
 		S:HandleTab(tab);
 	end
 
-		GearManagerDialog:StripTextures()
-	GearManagerDialog:CreateBackdrop('Transparent')
-	GearManagerDialog.backdrop:Point('TOPLEFT', 5, -2)
-	GearManagerDialog.backdrop:Point('BOTTOMRIGHT', -1, 4)
+	GearManagerDialog:StripTextures()
+	GearManagerDialog:CreateBackdrop("Transparent")
+	GearManagerDialog.backdrop:Point("TOPLEFT", 5, -2)
+	GearManagerDialog.backdrop:Point("BOTTOMRIGHT", -1, 4)
 
 	S:HandleCloseButton(GearManagerDialogClose)
 
 	for i = 1, 10 do
-		_G['GearSetButton'..i]:StripTextures()
-		_G['GearSetButton'..i]:StyleButton()
-		_G['GearSetButton'..i]:CreateBackdrop('Default')
-		_G['GearSetButton'..i].backdrop:SetAllPoints()
-		_G['GearSetButton'..i..'Icon']:SetTexCoord(unpack(E.TexCoords))
-		_G['GearSetButton'..i..'Icon']:SetInside()
+		_G["GearSetButton"..i]:StripTextures()
+		_G["GearSetButton"..i]:StyleButton()
+		_G["GearSetButton"..i]:CreateBackdrop("Default")
+		_G["GearSetButton"..i].backdrop:SetAllPoints()
+		_G["GearSetButton"..i.."Icon"]:SetTexCoord(unpack(E.TexCoords))
+		_G["GearSetButton"..i.."Icon"]:SetInside()
 	end
 
 	S:HandleButton(GearManagerDialogDeleteSet)
@@ -51,7 +52,7 @@ local function LoadSkin()
 			button.icon:SetTexCoord(unpack(E.TexCoords));
 		end
 
-		cooldown = _G[button:GetName() .."Cooldown"];
+		local cooldown = _G[button:GetName() .."Cooldown"];
 		if(cooldown) then
 			E:RegisterCooldown(cooldown);
 		end
@@ -68,22 +69,17 @@ local function LoadSkin()
 	end
 	hooksecurefunc("PaperDollFrameItemFlyout_DisplayButton", SkinItemFlyouts);
 
-	local function SkinFrameFlyouts()
-		PaperDollFrameItemFlyoutButtons:StripTextures();
-	end
- 	PaperDollFrameItemFlyout:HookScript('OnShow', SkinFrameFlyouts)
-
 	GearManagerDialogPopup:StripTextures()
 	GearManagerDialogPopup:CreateBackdrop("Transparent")
-	GearManagerDialogPopup.backdrop:Point('TOPLEFT', 5, -2)
-	GearManagerDialogPopup.backdrop:Point('BOTTOMRIGHT', -4, 8)
+	GearManagerDialogPopup.backdrop:Point("TOPLEFT", 5, -2)
+	GearManagerDialogPopup.backdrop:Point("BOTTOMRIGHT", -4, 8)
 
 	S:HandleEditBox(GearManagerDialogPopupEditBox)
 
 	GearManagerDialogPopupScrollFrame:StripTextures()
 	S:HandleScrollBar(GearManagerDialogPopupScrollFrameScrollBar)
 
-	for i=1, NUM_GEARSET_ICONS_SHOWN do
+	for i = 1, NUM_GEARSET_ICONS_SHOWN do
 		local button = _G["GearManagerDialogPopupButton"..i]
 		local icon = button.icon
 
@@ -108,23 +104,29 @@ local function LoadSkin()
 
 	PaperDollFrame:StripTextures(true)
 
-	PlayerTitleFrame:StripTextures()
-	PlayerTitleFrame:CreateBackdrop('Default')
-	PlayerTitleFrame.backdrop:Point('TOPLEFT', 20, 3)
-	PlayerTitleFrame.backdrop:Point('BOTTOMRIGHT', -16, 14)
+	PlayerTitleFrame:StripTextures();
+	PlayerTitleFrame:CreateBackdrop("Default");
+	PlayerTitleFrame.backdrop:Point("TOPLEFT", 20, 3);
+	PlayerTitleFrame.backdrop:Point("BOTTOMRIGHT", -16, 14);
+	PlayerTitleFrame.backdrop:SetFrameLevel(PlayerTitleFrame:GetFrameLevel());
 	S:HandleNextPrevButton(PlayerTitleFrameButton, true)
 	PlayerTitleFrameButton:ClearAllPoints()
 	PlayerTitleFrameButton:Point("RIGHT", PlayerTitleFrame.backdrop, "RIGHT", -2, 0)
 
-	PlayerTitlePickerFrame:StripTextures()
-	PlayerTitlePickerFrame:CreateBackdrop('Transparent')
-	PlayerTitlePickerFrame.backdrop:Point('TOPLEFT', 5, -8)
-	PlayerTitlePickerFrame.backdrop:Point('BOTTOMRIGHT', -10, 5)
+	PlayerTitlePickerFrame:StripTextures();
+	PlayerTitlePickerFrame:CreateBackdrop("Transparent");
+	PlayerTitlePickerFrame.backdrop:Point("TOPLEFT", 6, -10);
+	PlayerTitlePickerFrame.backdrop:Point("BOTTOMRIGHT", -10, 6);
+	PlayerTitlePickerFrame.backdrop:SetFrameLevel(PlayerTitlePickerFrame:GetFrameLevel());
 
-	S:HandleScrollBar(PlayerTitlePickerScrollFrameScrollBar)
+	for i = 1, #PlayerTitlePickerScrollFrame.buttons do
+		PlayerTitlePickerScrollFrame.buttons[i].text:FontTemplate();
+	end
 
-	_G['GearManagerToggleButton']:Size(26, 32);
-	_G['GearManagerToggleButton']:CreateBackdrop('Default');
+	S:HandleScrollBar(PlayerTitlePickerScrollFrameScrollBar);
+
+	_G["GearManagerToggleButton"]:Size(26, 32);
+	_G["GearManagerToggleButton"]:CreateBackdrop("Default");
 
 	GearManagerToggleButton:GetNormalTexture():SetTexCoord(0.1875, 0.796875, 0.125, 0.890625);
 	GearManagerToggleButton:GetPushedTexture():SetTexCoord(0.1875, 0.796875, 0.125, 0.890625);
@@ -139,6 +141,7 @@ local function LoadSkin()
 	for _, slot in pairs(slots) do
 		local icon = _G["Character"..slot.."IconTexture"];
 		local cooldown = _G["Character"..slot.."Cooldown"];
+		local popout = _G["Character" .. slot .. "PopoutButton"];
 
 		slot = _G["Character"..slot];
 		slot:StripTextures();
@@ -153,34 +156,82 @@ local function LoadSkin()
 		if(cooldown) then
 			E:RegisterCooldown(cooldown);
 		end
+
+		if(popout) then
+			popout:StripTextures();
+			popout:SetTemplate();
+			popout:HookScript("OnEnter", S.SetModifiedBackdrop);
+			popout:HookScript("OnLeave", S.SetOriginalBackdrop);
+
+			popout.icon = popout:CreateTexture(nil, "ARTWORK");
+			popout.icon:Size(14);
+			popout.icon:Point("CENTER");
+			popout.icon:SetTexture([[Interface\AddOns\ElvUI\media\textures\SquareButtonTextures.blp]]);
+
+			if(slot.verticalFlyout) then
+				popout:Size(23, 9);
+				S:SquareButton_SetIcon(popout, "DOWN");
+				popout:SetPoint("TOP", slot, "BOTTOM", 0, 5);
+			else
+				popout:Size(9, 23);
+				S:SquareButton_SetIcon(popout, "RIGHT");
+				popout:SetPoint("LEFT", slot, "RIGHT", -5, 0);
+			end
+		end
 	end
+
+	hooksecurefunc("PaperDollFrameItemFlyout_Show", function(self)
+		PaperDollFrameItemFlyoutButtons:StripTextures()
+		if(self.verticalFlyout) then
+			PaperDollFrameItemFlyout.buttonFrame:Point("TOPLEFT", self.popoutButton, "BOTTOMLEFT", -10, 0);
+		else
+			PaperDollFrameItemFlyout.buttonFrame:Point("TOPLEFT", self.popoutButton, "TOPRIGHT", 0, 10);
+		end
+	end)
+
+	hooksecurefunc("PaperDollFrameItemPopoutButton_SetReversed", function(self, isReversed)
+		if(self:GetParent().verticalFlyout) then
+			if(isReversed) then
+				S:SquareButton_SetIcon(self, "UP");
+			else
+				S:SquareButton_SetIcon(self, "DOWN");
+			end
+		else
+			if(isReversed) then
+				S:SquareButton_SetIcon(self, "LEFT");
+			else
+				S:SquareButton_SetIcon(self, "RIGHT");
+			end
+		end
+	end);
 
 	local function ColorItemBorder()
 		for _, slot in pairs(slots) do
-			local target = _G['Character'..slot]
+			local target = _G["Character"..slot]
 			local slotId, _, _ = GetInventorySlotInfo(slot)
-			local itemId = GetInventoryItemID('player', slotId)
+			local itemId = GetInventoryItemID("player", slotId)
 
 			if itemId then
 				local rarity = GetInventoryItemQuality("player", slotId);
 				if rarity and rarity > 1 then
 					target:SetBackdropBorderColor(GetItemQualityColor(rarity))
 				else
-					target:SetBackdropBorderColor(unpack(E['media'].bordercolor))
+					target:SetBackdropBorderColor(unpack(E["media"].bordercolor))
 				end
 			else
-				target:SetBackdropBorderColor(unpack(E['media'].bordercolor))
+				target:SetBackdropBorderColor(unpack(E["media"].bordercolor))
 			end
 		end
 	end
 
-	local CheckItemBorderColor = CreateFrame('Frame')
-	CheckItemBorderColor:RegisterEvent('PLAYER_EQUIPMENT_CHANGED')
-	CheckItemBorderColor:SetScript('OnEvent', ColorItemBorder)
-	CharacterFrame:HookScript('OnShow', ColorItemBorder)
+	local CheckItemBorderColor = CreateFrame("Frame")
+	CheckItemBorderColor:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	CheckItemBorderColor:SetScript("OnEvent", ColorItemBorder)
+	CharacterFrame:HookScript("OnShow", ColorItemBorder)
 	ColorItemBorder()
 
 	S:HandleRotateButton(CharacterModelFrameRotateLeftButton)
+	CharacterModelFrameRotateLeftButton:SetPoint("TOPLEFT", 3, -3);
 	S:HandleRotateButton(CharacterModelFrameRotateRightButton)
 	CharacterModelFrameRotateRightButton:SetPoint("TOPLEFT", CharacterModelFrameRotateLeftButton, "TOPRIGHT", 3, 0);
 
@@ -207,14 +258,14 @@ local function LoadSkin()
 	PetPaperDollFrame:StripTextures(true)
 
 	for i=1, 3 do
-		local Tab = _G['PetPaperDollFrameTab'..i];
+		local Tab = _G["PetPaperDollFrameTab"..i];
 		Tab:StripTextures();
 		Tab:CreateBackdrop("Default", true);
 		Tab.backdrop:Point("TOPLEFT", 3, -7);
 		Tab.backdrop:Point("BOTTOMRIGHT", -2, -1);
 
-		Tab:HookScript('OnEnter', function(self) self.backdrop:SetBackdropBorderColor(unpack(E['media'].rgbvaluecolor)); end);
-		Tab:HookScript('OnLeave', function(self) self.backdrop:SetBackdropBorderColor(unpack(E['media'].bordercolor)); end);
+		Tab:HookScript("OnEnter", function(self) self.backdrop:SetBackdropBorderColor(unpack(E["media"].rgbvaluecolor)); end);
+		Tab:HookScript("OnLeave", function(self) self.backdrop:SetBackdropBorderColor(unpack(E["media"].bordercolor)); end);
 	end
 
 	S:HandleRotateButton(PetModelFrameRotateLeftButton)
@@ -274,17 +325,17 @@ local function LoadSkin()
 
 	S:HandleButton(CompanionSummonButton)
 
-	hooksecurefunc('PetPaperDollFrame_UpdateCompanions', function()
+	hooksecurefunc("PetPaperDollFrame_UpdateCompanions", function()
 		local Button, IconNormal, IconDisabled, ActiveTexture;
 
 		for i = 1, NUM_COMPANIONS_PER_PAGE do
 			Button = _G["CompanionButton"..i];
 			IconNormal = Button:GetNormalTexture();
 			IconDisabled = Button:GetDisabledTexture();
-			ActiveTexture = _G['CompanionButton'..i..'ActiveTexture'];
+			ActiveTexture = _G["CompanionButton"..i.."ActiveTexture"];
 
 			Button:StyleButton(nil, true);
-			Button:SetTemplate('Default', true)
+			Button:SetTemplate("Default", true)
 
 			if IconNormal then
 				IconNormal:SetTexCoord(unpack(E.TexCoords));
@@ -348,7 +399,7 @@ local function LoadSkin()
 	S:HandleScrollBar(ReputationListScrollFrameScrollBar);
 
 	ReputationDetailFrame:StripTextures();
-	ReputationDetailFrame:SetTemplate('Transparent');
+	ReputationDetailFrame:SetTemplate("Transparent");
 
 	S:HandleCloseButton(ReputationDetailCloseButton);
 
@@ -358,6 +409,14 @@ local function LoadSkin()
 	S:HandleCheckBox(ReputationDetailMainScreenCheckBox);
 
 	SkillFrame:StripTextures(true);
+
+	SkillDetailStatusBarUnlearnButton:StripTextures();
+	SkillDetailStatusBarUnlearnButton:Point("LEFT", SkillDetailStatusBarBorder, "RIGHT", 5, -4);
+
+	SkillDetailStatusBarUnlearnButton.texture = SkillDetailStatusBarUnlearnButton:CreateTexture(nil, "OVERLAY");
+	SkillDetailStatusBarUnlearnButton.texture:SetTexture("Interface\\Buttons\\UI-GroupLoot-Pass-Up");
+	SkillDetailStatusBarUnlearnButton.texture:Point("TOPLEFT", 2, 3);
+	SkillDetailStatusBarUnlearnButton.texture:Point("BOTTOMRIGHT", -2, 6);
 
 	SkillFrameExpandButtonFrame:StripTextures();
 
@@ -409,18 +468,18 @@ local function LoadSkin()
 		end);
 	end
 
-	hooksecurefunc('SkillDetailFrame_SetStatusBar', function()
+	hooksecurefunc("SkillDetailFrame_SetStatusBar", function()
 		local StatusBar = _G["SkillDetailStatusBar"];
-		local StatusBarBorder = _G['SkillDetailStatusBarBorder'];
-		local StatusBarBackground = _G['SkillDetailStatusBarBackground'];
+		local StatusBarBorder = _G["SkillDetailStatusBarBorder"];
+		local StatusBarBackground = _G["SkillDetailStatusBarBackground"];
 
 		if(not StatusBar.skinned) then
-			StatusBar:SetStatusBarTexture(E['media'].normTex);
+			StatusBar:SetStatusBarTexture(E["media"].normTex);
 			E:RegisterStatusBar(StatusBar);
 			StatusBar.skinned = true;
 		end
 
-		StatusBar:SetTemplate('Default');
+		StatusBar:SetTemplate("Default");
 
 		StatusBarBorder:SetTexture(nil);
 		StatusBarBackground:SetTexture(nil);
@@ -433,17 +492,18 @@ local function LoadSkin()
 	S:HandleScrollBar(SkillDetailScrollFrameScrollBar);
 
 	S:HandleButton(SkillFrameCancelButton);
+	SkillFrameCancelButton:Point("CENTER", SkillFrame, "TOPLEFT", 307, -420);
 
 	TokenFrame:StripTextures(true);
 
 	select(4, TokenFrame:GetChildren()):Hide();
 
-	hooksecurefunc('TokenFrame_Update', function()
+	hooksecurefunc("TokenFrame_Update", function()
 		local scrollFrame = TokenFrameContainer;
 		local offset = HybridScrollFrame_GetOffset(scrollFrame);
 		local buttons = scrollFrame.buttons;
 		local numButtons = #buttons;
-		local name, isHeader, extraCurrencyType, icon;
+		local _, name, isHeader, isExpanded, extraCurrencyType, icon;
 		local button, index;
 
 		for i = 1, numButtons do
@@ -476,7 +536,7 @@ local function LoadSkin()
 					if ( extraCurrencyType == 1 ) then
 						button.icon:SetTexCoord(unpack(E.TexCoords));
 					elseif ( extraCurrencyType == 2 ) then
-						local factionGroup = UnitFactionGroup('player');
+						local factionGroup = UnitFactionGroup("player");
 						if ( factionGroup ) then
 							button.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-"..factionGroup);
 							button.icon:SetTexCoord( 0.03125, 0.59375, 0.03125, 0.59375 );
@@ -495,9 +555,10 @@ local function LoadSkin()
 	S:HandleScrollBar(TokenFrameContainerScrollBar);
 
 	S:HandleButton(TokenFrameCancelButton);
+	TokenFrameCancelButton:Point("CENTER", TokenFrame, "TOPLEFT", 307, -420);
 
 	TokenFramePopup:StripTextures();
-	TokenFramePopup:SetTemplate('Transparent');
+	TokenFramePopup:SetTemplate("Transparent");
 
 	S:HandleCloseButton(TokenFramePopupCloseButton);
 

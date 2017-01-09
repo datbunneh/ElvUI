@@ -31,7 +31,7 @@ E.Options.args.general = {
 		intro = {
 			order = 4,
 			type = "description",
-			name = L["ELVUI_DESC"]:gsub("ElvUI", E.UIName),
+			name = L["ELVUI_DESC"],
 		},
 		general = {
 			order = 5,
@@ -224,47 +224,7 @@ E.Options.args.general = {
 					type = "execute",
 					name = L["Apply Font To All"],
 					desc = L["Applies the font and font size settings throughout the entire user interface. Note: Some font size settings will be skipped due to them having a smaller font size by default."],
-					func = function()
-						local font = E.db.general.font;
-						local fontSize = E.db.general.fontSize;
-
-						E.db.bags.itemLevelFont = font;
-						E.db.bags.itemLevelFontSize = fontSize;
-						E.db.bags.countFont = font;
-						E.db.bags.countFontSize = fontSize;
-						E.db.nameplate.font = font;
-						--E.db.nameplate.fontSize = fontSize;
-						E.db.nameplate.buffs.font = font;
-						--E.db.nameplate.buffs.fontSize = fontSize;
-						E.db.nameplate.debuffs.font = font;
-						--E.db.nameplate.debuffs.fontSize = fontSize;
-						E.db.actionbar.font = font
-						--E.db.actionbar.fontSize = fontSize
-						E.db.auras.font = font;
-						E.db.auras.fontSize = fontSize;
-						E.db.general.reminder.font = font;
-						--E.db.general.reminder.fontSize = fontSize;
-						E.db.chat.font = font;
-						E.db.chat.fontSize = fontSize;
-						E.db.chat.tabFont = font;
-						E.db.chat.tapFontSize = fontSize;
-						E.db.datatexts.font = font;
-						E.db.datatexts.fontSize = fontSize;
-						E.db.tooltip.font = font;
-						E.db.tooltip.fontSize = fontSize;
-						E.db.tooltip.headerFontSize = fontSize;
-						E.db.tooltip.textFontSize = fontSize;
-						E.db.tooltip.smallTextFontSize = fontSize;
-						E.db.tooltip.healthBar.font = font;
-						--E.db.tooltip.healthbar.fontSize = fontSize;
-						E.db.unitframe.font = font;
-						--E.db.unitframe.fontSize = fontSize;
-						--E.db.unitframe.units.party.rdebuffs.font = font;
-						E.db.unitframe.units.raid.rdebuffs.font = font;
-						E.db.unitframe.units.raid40.rdebuffs.font = font;
-
-						E:UpdateAll(true);
-					end
+					func = function() E:StaticPopup_Show("APPLY_FONT_WARNING"); end
 				},
 				dmgfont = {
 					order = 5,
@@ -629,7 +589,7 @@ E.Options.args.general = {
 					name = L["Watch Frame Height"],
 					desc = L["Height of the watch tracker. Increase size to be able to see more objectives."],
 					min = 400, max = E.screenheight, step = 1,
-					set = function(info, value) E.db.general.watchFrameHeight = value; E:GetModule('Blizzard'):WatchFrameHeight(); end
+					set = function(info, value) E.db.general.watchFrameHeight = value; E:GetModule("Blizzard"):WatchFrameHeight(); end
 				}
 			}
 		},

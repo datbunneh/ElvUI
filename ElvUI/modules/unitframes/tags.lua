@@ -33,7 +33,6 @@ local GetNumPartyMembers = GetNumPartyMembers;
 local UnitClassification = UnitClassification;
 local GetUnitSpeed = GetUnitSpeed;
 local DEFAULT_AFK_MESSAGE = DEFAULT_AFK_MESSAGE;
-local DEAD = DEAD;
 local PVP = PVP;
 
 ------------------------------------------------------------------------
@@ -64,7 +63,7 @@ end
 ElvUF.TagEvents["health:current"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 ElvUF.Tags["health:current"] = function(unit)
 	if not unit then return end
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 	if (status) then
 		return status
 	else
@@ -75,7 +74,7 @@ end
 ElvUF.TagEvents["health:deficit"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 ElvUF.Tags["health:deficit"] = function(unit)
 	if not unit then return end
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 
 	if (status) then
 		return status
@@ -87,7 +86,7 @@ end
 ElvUF.TagEvents["health:current-percent"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 ElvUF.Tags["health:current-percent"] = function(unit)
 	if not unit then return end
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 
 	if (status) then
 		return status
@@ -99,7 +98,7 @@ end
 ElvUF.TagEvents["health:current-max"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 ElvUF.Tags["health:current-max"] = function(unit)
 	if not unit then return end
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 
 	if (status) then
 		return status
@@ -111,7 +110,7 @@ end
 ElvUF.TagEvents["health:current-max-percent"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 ElvUF.Tags["health:current-max-percent"] = function(unit)
 	if not unit then return end
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 
 	if (status) then
 		return status
@@ -131,7 +130,7 @@ end
 ElvUF.TagEvents["health:percent"] = "UNIT_HEALTH UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 ElvUF.Tags["health:percent"] = function(unit)
 	if not unit then return end
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 
 	if (status) then
 		return status
@@ -168,6 +167,18 @@ end
 ElvUF.TagEvents["health:percent-nostatus"] = "UNIT_HEALTH UNIT_MAXHEALTH";
 ElvUF.Tags["health:percent-nostatus"] = function(unit)
 	return E:GetFormattedText("PERCENT", UnitHealth(unit), UnitHealthMax(unit));
+end
+
+ElvUF.TagEvents["health:deficit-percent:name"] = "UNIT_HEALTH UNIT_MAXHEALTH";
+ElvUF.Tags["health:deficit-percent:name"] = function(unit)
+	local currentHealth = UnitHealth(unit)
+	local deficit = UnitHealthMax(unit) - currentHealth;
+
+	if(deficit > 0 and currentHealth > 0) then
+		return _TAGS["health:percent-nostatus"](unit);
+	else
+		return _TAGS["name"](unit);
+	end
 end
 
 ElvUF.TagEvents["powercolor"] = "UNIT_ENERGY UNIT_FOCUS UNIT_MANA UNIT_RAGE UNIT_RUNIC_POWER UNIT_MAXPOWER"
@@ -324,47 +335,47 @@ ElvUF.Tags["name:long"] = function(unit)
 	return name ~= nil and E:ShortenString(name, 20) or ""
 end
 
-ElvUF.TagEvents['name:veryshort:status'] = 'UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH'
-ElvUF.Tags['name:veryshort:status'] = function(unit)
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+ElvUF.TagEvents["name:veryshort:status"] = "UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH"
+ElvUF.Tags["name:veryshort:status"] = function(unit)
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 	local name = UnitName(unit)
 	if (status) then
 		return status
 	else
-		return name ~= nil and E:ShortenString(name, 5) or ''
+		return name ~= nil and E:ShortenString(name, 5) or ""
 	end
 end
 
-ElvUF.TagEvents['name:short:status'] = 'UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH'
-ElvUF.Tags['name:short:status'] = function(unit)
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+ElvUF.TagEvents["name:short:status"] = "UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH"
+ElvUF.Tags["name:short:status"] = function(unit)
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 	local name = UnitName(unit)
 	if (status) then
 		return status
 	else
-		return name ~= nil and E:ShortenString(name, 10) or ''
+		return name ~= nil and E:ShortenString(name, 10) or ""
 	end
 end
 
-ElvUF.TagEvents['name:medium:status'] = 'UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH'
-ElvUF.Tags['name:medium:status'] = function(unit)
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+ElvUF.TagEvents["name:medium:status"] = "UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH"
+ElvUF.Tags["name:medium:status"] = function(unit)
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 	local name = UnitName(unit)
 	if (status) then
 		return status
 	else
-		return name ~= nil and E:ShortenString(name, 15) or ''
+		return name ~= nil and E:ShortenString(name, 15) or ""
 	end
 end
 
-ElvUF.TagEvents['name:long:status'] = 'UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH'
-ElvUF.Tags['name:long:status'] = function(unit)
-	local status = UnitIsDead(unit) and DEAD or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
+ElvUF.TagEvents["name:long:status"] = "UNIT_NAME_UPDATE UNIT_CONNECTION PLAYER_FLAGS_CHANGED UNIT_HEALTH"
+ElvUF.Tags["name:long:status"] = function(unit)
+	local status = UnitIsDead(unit) and L["Dead"] or UnitIsGhost(unit) and L["Ghost"] or not UnitIsConnected(unit) and L["Offline"]
 	local name = UnitName(unit)
 	if (status) then
 		return status
 	else
-		return name ~= nil and E:ShortenString(name, 20) or ''
+		return name ~= nil and E:ShortenString(name, 20) or ""
 	end
 end
 
@@ -526,15 +537,15 @@ ElvUF.Tags["classificationcolor"] = function(unit)
 	end
 end
 
-ElvUF.TagEvents['guild'] = 'PLAYER_GUILD_UPDATE'
-ElvUF.Tags['guild'] = function(unit)
+ElvUF.TagEvents["guild"] = "PLAYER_GUILD_UPDATE"
+ElvUF.Tags["guild"] = function(unit)
 	local guildName = GetGuildInfo(unit)
 
 	return guildName or ""
 end
 
-ElvUF.TagEvents['guild:brackets'] = 'PLAYER_GUILD_UPDATE'
-ElvUF.Tags['guild:brackets'] = function(unit)
+ElvUF.TagEvents["guild:brackets"] = "PLAYER_GUILD_UPDATE"
+ElvUF.Tags["guild:brackets"] = function(unit)
 	local guildName = GetGuildInfo(unit)
 
 	return guildName and format("<%s>", guildName) or ""

@@ -4,7 +4,6 @@ local UF = E:GetModule("UnitFrames");
 local random = random;
 
 local CreateFrame = CreateFrame;
-local UnitPowerType = UnitPowerType;
 
 local _, ns = ...;
 local ElvUF = ns.oUF;
@@ -14,7 +13,6 @@ function UF:Construct_PowerBar(frame, bg, text, textPos)
 	local power = CreateFrame("StatusBar", nil, frame);
 	UF["statusbars"][power] = true;
 
-	power:SetFrameStrata("LOW");
 	power.PostUpdate = self.PostUpdatePower;
 
 	if(bg) then
@@ -26,9 +24,9 @@ function UF:Construct_PowerBar(frame, bg, text, textPos)
 
 	if(text) then
 		power.value = frame.RaisedElementParent:CreateFontString(nil, "OVERLAY");
-		UF:Configure_FontString(power.value);
+		power.value.frequentUpdates = true;
 
-		power.value:SetParent(frame);
+		UF:Configure_FontString(power.value);
 
 		local x = -2;
 		if(textPos == "LEFT") then
@@ -46,6 +44,7 @@ function UF:Construct_PowerBar(frame, bg, text, textPos)
 end
 
 function UF:Configure_Power(frame)
+	if(not frame.VARIABLES_SET) then return; end
 	local db = frame.db;
 	local power = frame.Power;
 
@@ -60,9 +59,6 @@ function UF:Configure_Power(frame)
 		power.SmoothSpeed = self.db.smoothSpeed * 10;
 
 		local attachPoint = self:GetObjectAnchorPoint(frame, db.power.attachTextTo);
-		if(E.global.tukuiMode and frame.InfoPanel and frame.InfoPanel:IsShown()) then
-			attachPoint = frame.InfoPanel;
-		end
 		power.value:ClearAllPoints();
 		power.value:Point(db.power.position, attachPoint, db.power.position, db.power.xOffset, db.power.yOffset);
 		frame:Tag(power.value, db.power.text_format);
@@ -122,8 +118,7 @@ function UF:Configure_Power(frame)
 				power.Holder.mover:SetAlpha(1);
 			end
 
-			power:SetFrameStrata("MEDIUM");
-			power:SetFrameLevel(frame:GetFrameLevel() + 3);
+			power:SetFrameLevel(50);
 		elseif(frame.USE_POWERBAR_OFFSET) then
 			if(frame.ORIENTATION == "LEFT") then
 				power:Point("TOPRIGHT", frame.Health, "TOPRIGHT", frame.POWERBAR_OFFSET, -frame.POWERBAR_OFFSET);
@@ -135,16 +130,14 @@ function UF:Configure_Power(frame)
 				power:Point("TOPLEFT", frame.Health, "TOPLEFT", -frame.POWERBAR_OFFSET, -frame.POWERBAR_OFFSET);
 				power:Point("BOTTOMRIGHT", frame.Health, "BOTTOMRIGHT", -frame.POWERBAR_OFFSET, -frame.POWERBAR_OFFSET);
 			end
-			power:SetFrameStrata("LOW");
 			power:SetFrameLevel(frame.Health:GetFrameLevel() -5);
 		elseif(frame.USE_INSET_POWERBAR) then
-			power:Height(frame.POWERBAR_HEIGHT  - ((frame.BORDER + frame.SPACING)*2));
+			power:Height(frame.POWERBAR_HEIGHT - ((frame.BORDER + frame.SPACING)*2));
 			power:Point("BOTTOMLEFT", frame.Health, "BOTTOMLEFT", frame.BORDER + (frame.BORDER*2), frame.BORDER + (frame.BORDER*2));
 			power:Point("BOTTOMRIGHT", frame.Health, "BOTTOMRIGHT", -(frame.BORDER + (frame.BORDER*2)), frame.BORDER + (frame.BORDER*2));
-			power:SetFrameStrata("MEDIUM");
-			power:SetFrameLevel(frame:GetFrameLevel() + 3);
+			power:SetFrameLevel(50);
 		elseif(frame.USE_MINI_POWERBAR) then
-			power:Height(frame.POWERBAR_HEIGHT  - ((frame.BORDER + frame.SPACING)*2));
+			power:Height(frame.POWERBAR_HEIGHT - ((frame.BORDER + frame.SPACING)*2));
 
 			if(frame.ORIENTATION == "LEFT") then
 				power:Width(frame.POWERBAR_WIDTH - frame.BORDER*2);
@@ -157,14 +150,12 @@ function UF:Configure_Power(frame)
 				power:Point("RIGHT", frame, "BOTTOMRIGHT", -(frame.BORDER*2 + 4), ((frame.POWERBAR_HEIGHT-frame.BORDER)/2));
 			end
 
-			power:SetFrameStrata("MEDIUM");
-			power:SetFrameLevel(frame:GetFrameLevel() + 3);
+			power:SetFrameLevel(50);
 		else
 			power:Point("TOPRIGHT", frame.Health.backdrop, "BOTTOMRIGHT", -frame.BORDER, -frame.SPACING*3);
 			power:Point("TOPLEFT", frame.Health.backdrop, "BOTTOMLEFT", frame.BORDER, -frame.SPACING*3);
-			power:Height(frame.POWERBAR_HEIGHT  - ((frame.BORDER + frame.SPACING)*2));
+			power:Height(frame.POWERBAR_HEIGHT - ((frame.BORDER + frame.SPACING)*2));
 
-			power:SetFrameStrata(frame.Health:GetFrameStrata());
 			power:SetFrameLevel(frame.Health:GetFrameLevel() - 5);
 		end
 
@@ -177,7 +168,10 @@ function UF:Configure_Power(frame)
 
 		if(db.power.strataAndLevel and db.power.strataAndLevel.useCustomStrata) then
 			power:SetFrameStrata(db.power.strataAndLevel.frameStrata);
+		else
+			power:SetFrameStrata("LOW");
 		end
+
 		if(db.power.strataAndLevel and db.power.strataAndLevel.useCustomLevel) then
 			power:SetFrameLevel(db.power.strataAndLevel.frameLevel);
 			power.backdrop:SetFrameLevel(power:GetFrameLevel() - 1);
@@ -211,14 +205,13 @@ end
 
 local tokens = {[0] = "MANA", "RAGE", "FOCUS", "ENERGY", "RUNIC_POWER"}
 function UF:PostUpdatePower(unit, min, max)
-	local pType = UnitPowerType(unit);
 	local parent = self:GetParent();
 
 	if(parent.isForced) then
-		min = random(1, max);
-		pType = random(0, 4);
-		self:SetValue(min);
+		local pType = random(0, 4);
 		local color = ElvUF["colors"].power[tokens[pType]];
+		min = random(1, max);
+		self:SetValue(min);
 
 		if(not self.colorClass) then
 			self:SetStatusBarColor(color[1], color[2], color[3]);
@@ -227,6 +220,7 @@ function UF:PostUpdatePower(unit, min, max)
 		end
 	end
 
+	local db = parent.db;
 	if(db and db.power and db.power.hideonnpc) then
 		UF:PostNamePosition(parent, unit);
 	end

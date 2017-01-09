@@ -8,7 +8,6 @@ local min = min;
 local GetPetExperience, UnitXP, UnitXPMax = GetPetExperience, UnitXP, UnitXPMax;
 local UnitLevel = UnitLevel;
 local IsXPUserDisabled, GetXPExhaustion = IsXPUserDisabled, GetXPExhaustion;
-local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL;
 local MAX_PLAYER_LEVEL_TABLE = MAX_PLAYER_LEVEL_TABLE;
 local InCombatLockdown = InCombatLockdown;
 
@@ -22,7 +21,7 @@ end
 
 function mod:UpdateExperience(event)
 	local bar = self.expBar;
-	local hideXP = ((UnitLevel('player') == MAX_PLAYER_LEVEL and self.db.experience.hideAtMaxLevel) or IsXPUserDisabled())
+	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()] and self.db.experience.hideAtMaxLevel) or IsXPUserDisabled());
 
 	if hideXP or (event == "PLAYER_REGEN_DISABLED" and self.db.experience.hideInCombat) then
 		bar:Hide();
@@ -36,6 +35,7 @@ function mod:UpdateExperience(event)
 		end
 
 		local cur, max = self:GetXP("player");
+		if(max <= 0) then max = 1; end
 		bar.statusBar:SetMinMaxValues(0, max);
 		bar.statusBar:SetValue(cur - 1 >= 0 and cur - 1 or 0);
 		bar.statusBar:SetValue(cur);
@@ -54,6 +54,12 @@ function mod:UpdateExperience(event)
 				text = format("%s - %s R:%s", E:ShortValue(cur), E:ShortValue(max), E:ShortValue(rested));
 			elseif(textFormat == "CURPERC") then
 				text = format("%s - %d%% R:%s [%d%%]", E:ShortValue(cur), cur / max * 100, E:ShortValue(rested), rested / max * 100);
+			elseif(textFormat == "CUR") then
+				text = format("%s R:%s", E:ShortValue(cur), E:ShortValue(rested));
+			elseif(textFormat == "REM") then
+				text = format("%s R:%s", E:ShortValue(max - cur), E:ShortValue(rested));
+			elseif(textFormat == "CURREM") then
+				text = format("%s - %s R:%s", E:ShortValue(cur), E:ShortValue(max - cur), E:ShortValue(rested));
 			end
 		else
 			bar.rested:SetMinMaxValues(0, 1);
@@ -65,6 +71,12 @@ function mod:UpdateExperience(event)
 				text = format("%s - %s", E:ShortValue(cur), E:ShortValue(max));
 			elseif(textFormat == "CURPERC") then
 				text = format("%s - %d%%", E:ShortValue(cur), cur / max * 100);
+			elseif(textFormat == "CUR") then
+				text = format("%s", E:ShortValue(cur));
+			elseif(textFormat == "REM") then
+				text = format("%s", E:ShortValue(max - cur));
+			elseif(textFormat == "CURREM") then
+				text = format("%s - %s", E:ShortValue(cur), E:ShortValue(max - cur));
 			end
 		end
 

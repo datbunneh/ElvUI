@@ -2,13 +2,15 @@ local E, L, V, P, G = unpack(select(2, ...));
 local UF = E:GetModule("UnitFrames");
 
 function UF:Construct_RestingIndicator(frame)
-	local resting = frame:CreateTexture(nil, "OVERLAY");
+	local parent = frame.RaisedElementParent or frame;
+	local resting = parent:CreateTexture(nil, "OVERLAY");
 	resting:Size(22);
 
 	return resting;
 end
 
 function UF:Configure_RestingIndicator(frame)
+	if(not frame.VARIABLES_SET) then return; end
 	local rIcon = frame.Resting;
 	local db = frame.db
 	if(db.restIcon) then

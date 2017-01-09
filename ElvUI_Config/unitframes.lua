@@ -1,5 +1,5 @@
 local E, L, V, P, G = unpack(ElvUI);
-local UF = E:GetModule('UnitFrames');
+local UF = E:GetModule("UnitFrames");
 
 local _, ns = ...;
 local ElvUF = ns.oUF;
@@ -145,7 +145,7 @@ local function GetOptionsTable_Health(isGroupFrame, updateFunc, groupName, numUn
 				values = {
 					["Health"] = L["Health"],
 					["Power"] = L["Power"],
-					["InfoPanel"] = L["Information Bar"],
+					["InfoPanel"] = L["Information Panel"],
 					["Frame"] = L["Frame"]
 				}
 			},
@@ -176,7 +176,7 @@ local function GetOptionsTable_Health(isGroupFrame, updateFunc, groupName, numUn
 		config.args.orientation = {
 			type = "select",
 			order = 5,
-			name = L["Orientation"],
+			name = L["Statusbar Fill Orientation"],
 			desc = L["Direction the health bar moves when gaining/losing health."],
 			values = {
 				["HORIZONTAL"] = L["Horizontal"],
@@ -301,7 +301,7 @@ local function GetOptionsTable_Power(hasDetatchOption, updateFunc, groupName, nu
 				values = {
 					["Health"] = L["Health"],
 					["Power"] = L["Power"],
-					["InfoPanel"] = L["Information Bar"],
+					["InfoPanel"] = L["Information Panel"],
 					["Frame"] = L["Frame"]
 				}
 			}
@@ -419,7 +419,7 @@ local function GetOptionsTable_Name(updateFunc, groupName, numUnits)
 				values = {
 					["Health"] = L["Health"],
 					["Power"] = L["Power"],
-					["InfoPanel"] = L["Information Bar"],
+					["InfoPanel"] = L["Information Panel"],
 					["Frame"] = L["Frame"]
 				}
 			},
@@ -447,7 +447,8 @@ local function GetOptionsTable_Portrait(updateFunc, groupName, numUnits)
 			enable = {
 				type = "toggle",
 				order = 1,
-				name = L["Enable"]
+				name = L["Enable"],
+				desc = L["If you have a lot of 3D Portraits active then it will likely have a big impact on your FPS. Disable some portraits if you experience FPS issues."]
 			},
 			width = {
 				type = "range",
@@ -526,32 +527,32 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 			},
 			anchorPoint = {
 				type = "select",
-				order = 7,
+				order = 8,
 				name = L["Anchor Point"],
 				desc = L["What point to anchor to the frame you set to attach to."],
 				values = positionValues
 			},
 			fontSize = {
-				order = 8,
+				order = 9,
 				name = L["Font Size"],
 				type = "range",
 				min = 6, max = 22, step = 1
 			},
 			clickThrough = {
-				order = 9,
+				order = 10,
 				name = L["Click Through"],
 				desc = L["Ignore mouse events."],
 				type = "toggle"
 			},
 			sortMethod = {
-				order = 10,
+				order = 11,
 				name = L["Sort By"],
 				desc = L["Method to sort by."],
 				type = "select",
 				values = auraSortValues
 			},
 			sortDirection = {
-				order = 11,
+				order = 12,
 				name = L["Sort Direction"],
 				desc = L["Ascending or Descending order."],
 				type = "select",
@@ -570,7 +571,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 	if(auraType == "buffs") then
 		config.args.attachTo = {
 			type = "select",
-			order = 7,
+			order = 8,
 			name = L["Attach To"],
 			desc = L["What to attach the buff anchor frame to."],
 			values = {
@@ -583,7 +584,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 	else
 		config.args.attachTo = {
 			type = "select",
-			order = 7,
+			order = 8,
 			name = L["Attach To"],
 			desc = L["What to attach the debuff anchor frame to."],
 			values = {
@@ -606,31 +607,31 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 
 	if(friendlyUnitOnly) then
 		config.args.filters.args.playerOnly = {
-			order = 10,
+			order = 14,
 			type = "toggle",
 			name = L["Block Non-Personal Auras"],
 			desc = L["Don't display auras that are not yours."]
 		};
 		config.args.filters.args.useBlacklist = {
-			order = 11,
+			order = 15,
 			type = "toggle",
 			name = L["Block Blacklisted Auras"],
 			desc = L["Don't display any auras found on the 'Blacklist' filter."]
 		};
 		config.args.filters.args.useWhitelist = {
-			order = 12,
+			order = 16,
 			type = "toggle",
 			name = L["Allow Whitelisted Auras"],
 			desc = L["If no other filter options are being used then it will block anything not on the 'Whitelist' filter, otherwise it will simply add auras on the whitelist in addition to any other filter settings."]
 		};
 		config.args.filters.args.noDuration = {
-			order = 13,
+			order = 17,
 			type = "toggle",
 			name = L["Block Auras Without Duration"],
 			desc = L["Don't display auras that have no duration."]
 		};
 		config.args.filters.args.onlyDispellable = {
-			order = 14,
+			order = 18,
 			type = "toggle",
 			name = L["Block Non-Dispellable Auras"],
 			desc = L["Don't display auras that cannot be purged or dispelled by your class."]
@@ -638,7 +639,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 
 		if(auraType == "buffs") then
 			config.args.filters.args.noConsolidated = {
-				order = 15,
+				order = 18,
 				type = "toggle",
 				name = L["Block Raid Buffs"],
 				desc = L["Don't display raid buffs such as Blessing of Kings or Mark of the Wild."]
@@ -646,7 +647,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 		end
 
 		config.args.filters.args.useFilter = {
-			order = 16,
+			order = 19,
 			name = L["Additional Filter"],
 			desc = L["Select an additional filter to use. If the selected filter is a whitelist and no other filters are being used (with the exception of Block Non-Personal Auras) then it will block anything not on the whitelist, otherwise it will simply add auras on the whitelist in addition to any other filter settings."],
 			type = "select",
@@ -659,9 +660,15 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 				return filters;
 			end
 		};
+		config.args.filters.args.additionalFilterAllowNonPersonal = {
+			order = 20,
+			type = "toggle",
+			name = L["Additional Filter Override"],
+			desc = L["Allow non-personal auras from additional filter when 'Block Non-Personal Auras' is enabled."]
+		};
 	else
 		config.args.filters.args.playerOnly = {
-			order = 10,
+			order = 14,
 			guiInline = true,
 			type = "group",
 			name = L["Block Non-Personal Auras"],
@@ -685,7 +692,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 			}
 		};
 		config.args.filters.args.useBlacklist = {
-			order = 11,
+			order = 15,
 			guiInline = true,
 			type = "group",
 			name = L["Block Blacklisted Auras"],
@@ -709,7 +716,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 			}
 		};
 		config.args.filters.args.useWhitelist = {
-			order = 12,
+			order = 16,
 			guiInline = true,
 			type = "group",
 			name = L["Allow Whitelisted Auras"],
@@ -733,7 +740,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 			}
 		};
 		config.args.filters.args.noDuration = {
-			order = 13,
+			order = 17,
 			guiInline = true,
 			type = "group",
 			name = L["Block Auras Without Duration"],
@@ -757,7 +764,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 			}
 		};
 		config.args.filters.args.onlyDispellable = {
-			order = 14,
+			order = 18,
 			guiInline = true,
 			type = "group",
 			name = L["Block Non-Dispellable Auras"],
@@ -782,7 +789,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 		};
 		if(auraType == "buffs") then
 			config.args.filters.args.noConsolidated = {
-				order = 15,
+				order = 18,
 				guiInline = true,
 				type = "group",
 				name = L["Block Raid Buffs"],
@@ -808,7 +815,7 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 		end
 
 		config.args.filters.args.useFilter = {
-			order = 16,
+			order = 19,
 			name = L["Additional Filter"],
 			desc = L["Select an additional filter to use. If the selected filter is a whitelist and no other filters are being used (with the exception of Block Non-Personal Auras) then it will block anything not on the whitelist, otherwise it will simply add auras on the whitelist in addition to any other filter settings."],
 			type = "select",
@@ -820,6 +827,12 @@ local function GetOptionsTable_Auras(friendlyUnitOnly, auraType, isGroupFrame, u
 				end
 				return filters;
 			end
+		};
+		config.args.filters.args.additionalFilterAllowNonPersonal = {
+			order = 20,
+			type = "toggle",
+			name = L["Additional Filter Override"],
+			desc = L["Allow non-personal auras from additional filter when 'Block Non-Personal Auras' is enabled."]
 		};
 	end
 
@@ -1171,6 +1184,12 @@ local function GetOptionsTable_AuraBars(friendlyOnly, updateFunc, groupName)
 				return filters;
 			end
 		};
+		config.args.filters.args.additionalFilterAllowNonPersonal = {
+			order = 17,
+			type = "toggle",
+			name = L["Additional Filter Override"],
+			desc = L["Allow non-personal auras from additional filter when 'Block Non-Personal Auras' is enabled."]
+		};
 	else
 		config.args.filters.args.playerOnly = {
 			order = 10,
@@ -1330,6 +1349,12 @@ local function GetOptionsTable_AuraBars(friendlyOnly, updateFunc, groupName)
 				return filters;
 			end
 		};
+		config.args.filters.args.additionalFilterAllowNonPersonal = {
+			order = 17,
+			type = "toggle",
+			name = L["Additional Filter Override"],
+			desc = L["Allow non-personal auras from additional filter when 'Block Non-Personal Auras' is enabled."]
+		};
 	end
 
 	config.args.filters.args.maxDuration = {
@@ -1370,7 +1395,7 @@ local function GetOptionsTable_RaidIcon(updateFunc, groupName, numUnits)
 				values = {
 					["Health"] = L["Health"],
 					["Power"] = L["Power"],
-					["InfoPanel"] = L["Information Bar"],
+					["InfoPanel"] = L["Information Panel"],
 					["Frame"] = L["Frame"]
 				}
 			},
@@ -1423,7 +1448,7 @@ local function GetOptionsTable_RaidDebuff(updateFunc, groupName)
 				order = 3,
 				type = "range",
 				name = L["Size"],
-				min = 8, max = 35, step = 1
+				min = 8, max = 100, step = 1
 			},
 			font = {
 				order = 4,
@@ -1700,7 +1725,7 @@ function UF:CreateCustomTextGroup(unit, objectName)
 				values = {
 					["Health"] = L["Health"],
 					["Power"] = L["Power"],
-					["InfoPanel"] = L["Information Bar"],
+					["InfoPanel"] = L["Information Panel"],
 					["Frame"] = L["Frame"]
 				}
 			},
@@ -2003,6 +2028,7 @@ E.Options.args.unitframe = {
 							name = L["Animation Speed"],
 							desc = L["Speed in seconds"],
 							min = 0.1, max = 3, step = 0.01,
+							disabled = function() return not E.db.unitframe.smoothbars; end,
 							set = function(info, value) E.db.unitframe[ info[#info] ] = value; UF:Update_AllFrames(); end
 						},
 						statusbar = {
@@ -2277,12 +2303,20 @@ E.Options.args.unitframe = {
 									order = 1,
 									type = "toggle",
 									name = L["Class Castbars"],
-									desc = L["Color castbars by the class or reaction type of the unit."],
+									desc = L["Color castbars by the class of player units."],
 									get = function(info) return E.db.unitframe.colors[ info[#info] ] end,
 									set = function(info, value) E.db.unitframe.colors[ info[#info] ] = value; UF:Update_AllFrames(); end
 								},
-								transparentCastbar = {
+								castReactionColor = {
 									order = 2,
+									type = "toggle",
+									name = L["Reaction Castbars"],
+									desc = L["Color castbars by the reaction type of non-player units."],
+									get = function(info) return E.db.unitframe.colors[ info[#info] ]; end,
+									set = function(info, value) E.db.unitframe.colors[ info[#info] ] = value; UF:Update_AllFrames(); end
+								},
+								transparentCastbar = {
+									order = 3,
 									type = "toggle",
 									name = L["Transparent"],
 									desc = L["Make textures transparent."],
@@ -2290,22 +2324,22 @@ E.Options.args.unitframe = {
 									set = function(info, value) E.db.unitframe.colors[ info[#info] ] = value; UF:Update_AllFrames(); end
 								},
 								castColor = {
-									order = 3,
+									order = 4,
 									name = L["Interruptable"],
 									type = "color"
 								},
 								castNoInterrupt = {
-									order = 4,
+									order = 5,
 									name = L["Non-Interruptable"],
 									type = "color"
 								},
 								castCompleteColor = {
-									order = 5,
+									order = 6,
 									name = L["Complete"],
 									type = "color"
 								},
 								castFailColor = {
-									order = 6,
+									order = 7,
 									name = L["Fail"],
 									type = "color"
 								}
@@ -2345,7 +2379,7 @@ E.Options.args.unitframe = {
 										local t = E.db.unitframe.colors.auraBarBuff;
 										local d = P.unitframe.colors.auraBarBuff;
 										return t.r, t.g, t.b, t.a, d.r, d.g, d.b;
- 									end,
+									end,
 									set = function(info, r, g, b)
 										if E:CheckClassColor(r, g, b) then
 											local classColor = E.myclass == "PRIEST" and E.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass]);
@@ -2556,7 +2590,7 @@ E.Options.args.unitframe.args.player = {
 			order = 14,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -2603,7 +2637,7 @@ E.Options.args.unitframe.args.player = {
 					order = 2,
 					name = L["Height"],
 					min = ((E.db.unitframe.thinBorders or E.PixelMode) and 3 or 7),
-					max = (E.db.unitframe.units['player']['classbar'].detachFromFrame and 300 or 30),
+					max = (E.db.unitframe.units["player"]["classbar"].detachFromFrame and 300 or 30),
 					step = 1,
 				},
 				fill = {
@@ -2617,7 +2651,7 @@ E.Options.args.unitframe.args.player = {
 				},
 				autoHide = {
 					order = 4,
-					type = 'toggle',
+					type = "toggle",
 					name = L["Auto-Hide"],
 				},
 				detachFromFrame = {
@@ -2630,16 +2664,16 @@ E.Options.args.unitframe.args.player = {
 						else
 							E.Options.args.unitframe.args.player.args.classbar.args.height.max = 30
 						end
-						E.db.unitframe.units['player']['classbar'][ info[#info] ] = value;
-						UF:CreateAndUpdateUF('player')
+						E.db.unitframe.units["player"]["classbar"][ info[#info] ] = value;
+						UF:CreateAndUpdateUF("player")
 					end,
 				},
 				verticalOrientation = {
 					order = 6,
 					type = "toggle",
 					name = L["Vertical Orientation"],
-					disabled = function() return not E.db.unitframe.units['player']['classbar'].detachFromFrame end,
- 				},
+					disabled = function() return not E.db.unitframe.units["player"]["classbar"].detachFromFrame end,
+				},
 				detachedWidth = {
 					type = "range",
 					order = 7,
@@ -2662,11 +2696,11 @@ E.Options.args.unitframe.args.player = {
 					order = 20,
 					type = "group",
 					name = L["Strata and Level"],
-					get = function(info) return E.db.unitframe.units['player']['classbar']["strataAndLevel"][ info[#info] ] end,
-					set = function(info, value) E.db.unitframe.units['player']['classbar']["strataAndLevel"][ info[#info] ] = value; UF:CreateAndUpdateUF('player') end,
+					get = function(info) return E.db.unitframe.units["player"]["classbar"]["strataAndLevel"][ info[#info] ] end,
+					set = function(info, value) E.db.unitframe.units["player"]["classbar"]["strataAndLevel"][ info[#info] ] = value; UF:CreateAndUpdateUF("player") end,
 					guiInline = true,
-					disabled = function() return not E.db.unitframe.units['player']['classbar'].detachFromFrame end,
-					hidden = function() return not E.db.unitframe.units['player']['classbar'].detachFromFrame end,
+					disabled = function() return not E.db.unitframe.units["player"]["classbar"].detachFromFrame end,
+					hidden = function() return not E.db.unitframe.units["player"]["classbar"].detachFromFrame end,
 					args = {
 						useCustomStrata = {
 							order = 1,
@@ -2701,15 +2735,59 @@ E.Options.args.unitframe.args.player = {
 							type = "range",
 							name = L["Frame Level"],
 							min = 2, max = 128, step = 1,
-						},
-					},
-				},
-			},
+						}
+					}
+				}
+			}
 		},
-		pvp = {
+		pvpIcon = {
+			order = 449,
+			type = "group",
+			name = L["PvP Icon"],
+			get = function(info) return E.db.unitframe.units["player"]["pvpIcon"][ info[#info] ] end,
+			set = function(info, value) E.db.unitframe.units["player"]["pvpIcon"][ info[#info] ] = value; UF:CreateAndUpdateUF("player") end,
+			args = {
+				enable = {
+					order = 1,
+					type = "toggle",
+					name = L["Enable"]
+				},
+				scale = {
+					order = 2,
+					type = "range",
+					name = L["Scale"],
+					isPercent = true,
+					min = 0.1, max = 2, step = 0.01
+				},
+				spacer = {
+					order = 3,
+					type = "description",
+					name = " "
+				},
+				anchorPoint = {
+					order = 4,
+					type = "select",
+					name = L["Anchor Point"],
+					values = positionValues
+				},
+				xOffset = {
+					order = 5,
+					type = "range",
+					name = L["X-Offset"],
+					min = -100, max = 100, step = 1
+				},
+				yOffset = {
+					order = 6,
+					type = "range",
+					name = L["Y-Offset"],
+					min = -100, max = 100, step = 1
+				}
+			}
+		},
+		pvpText = {
 			order = 850,
 			type = "group",
-			name = PVP,
+			name = L["PvP Text"],
 			get = function(info) return E.db.unitframe.units["player"]["pvp"][ info[#info] ]; end,
 			set = function(info, value) E.db.unitframe.units["player"]["pvp"][ info[#info] ] = value; UF:CreateAndUpdateUF("player"); end,
 			args = {
@@ -2842,7 +2920,7 @@ E.Options.args.unitframe.args.target = {
 			order = 13,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -2918,7 +2996,51 @@ E.Options.args.unitframe.args.target = {
 		castbar = GetOptionsTable_Castbar(false, UF.CreateAndUpdateUF, "target"),
 		aurabar = GetOptionsTable_AuraBars(false, UF.CreateAndUpdateUF, "target"),
 		raidicon = GetOptionsTable_RaidIcon(UF.CreateAndUpdateUF, "target"),
-		GPSArrow = GetOptionsTableForNonGroup_GPS("target")
+		GPSArrow = GetOptionsTableForNonGroup_GPS("target"),
+		pvpIcon = {
+			order = 449,
+			type = "group",
+			name = L["PvP Icon"],
+			get = function(info) return E.db.unitframe.units["target"]["pvpIcon"][ info[#info] ] end,
+			set = function(info, value) E.db.unitframe.units["target"]["pvpIcon"][ info[#info] ] = value; UF:CreateAndUpdateUF("target") end,
+			args = {
+				enable = {
+					order = 1,
+					type = "toggle",
+					name = L["Enable"]
+				},
+				scale = {
+					order = 2,
+					type = "range",
+					name = L["Scale"],
+					isPercent = true,
+					min = 0.1, max = 2, step = 0.01
+				},
+				spacer = {
+					order = 3,
+					type = "description",
+					name = " "
+				},
+				anchorPoint = {
+					order = 4,
+					type = "select",
+					name = L["Anchor Point"],
+					values = positionValues
+				},
+				xOffset = {
+					order = 5,
+					type = "range",
+					name = L["X-Offset"],
+					min = -100, max = 100, step = 1
+				},
+				yOffset = {
+					order = 6,
+					type = "range",
+					name = L["Y-Offset"],
+					min = -100, max = 100, step = 1
+				}
+			}
+		}
 	}
 };
 
@@ -3012,7 +3134,7 @@ E.Options.args.unitframe.args.targettarget = {
 			order = 11,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3133,7 +3255,7 @@ E.Options.args.unitframe.args.targettargettarget = {
 			order = 11,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3260,7 +3382,7 @@ E.Options.args.unitframe.args.focus = {
 			order = 12,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3384,7 +3506,7 @@ E.Options.args.unitframe.args.focustarget = {
 			order = 11,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3511,7 +3633,7 @@ E.Options.args.unitframe.args.pet = {
 			order = 12,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3659,7 +3781,7 @@ E.Options.args.unitframe.args.pettarget = {
 			order = 12,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3799,7 +3921,7 @@ E.Options.args.unitframe.args.boss = {
 			order = 13,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -3927,7 +4049,7 @@ E.Options.args.unitframe.args.arena = {
 			}
 		},
 		spacing = {
- 			order = 11,
+			order = 11,
 			type = "range",
 			name = L["Spacing"],
 			min = 0, max = 400, step = 1
@@ -3958,7 +4080,7 @@ E.Options.args.unitframe.args.arena = {
 			order = 14,
 			type = "select",
 			name = L["Frame Orientation"],
-			desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+			desc = L["Set the orientation of the UnitFrame."],
 			values = {
 				--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 				["LEFT"] = L["Left"],
@@ -4112,7 +4234,7 @@ E.Options.args.unitframe.args.party = {
 					order = 7,
 					type = "select",
 					name = L["Frame Orientation"],
-					desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+					desc = L["Set the orientation of the UnitFrame."],
 					values = {
 						--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 						["LEFT"] = L["Left"],
@@ -4362,7 +4484,7 @@ E.Options.args.unitframe.args.party = {
 					values = {
 						["Health"] = L["Health"],
 						["Power"] = L["Power"],
-						["InfoPanel"] = L["Information Bar"],
+						["InfoPanel"] = L["Information Panel"],
 						["Frame"] = L["Frame"]
 					}
 				},
@@ -4675,7 +4797,7 @@ E.Options.args.unitframe.args["raid"] = {
 					order = 7,
 					type = "select",
 					name = L["Frame Orientation"],
-					desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+					desc = L["Set the orientation of the UnitFrame."],
 					values = {
 						--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 						["LEFT"] = L["Left"],
@@ -4933,7 +5055,7 @@ E.Options.args.unitframe.args["raid"] = {
 					values = {
 						["Health"] = L["Health"],
 						["Power"] = L["Power"],
-						["InfoPanel"] = L["Information Bar"],
+						["InfoPanel"] = L["Information Panel"],
 						["Frame"] = L["Frame"]
 					}
 				},
@@ -5077,7 +5199,7 @@ E.Options.args.unitframe.args["raid40"] = {
 					order = 7,
 					type = "select",
 					name = L["Frame Orientation"],
-					desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+					desc = L["Set the orientation of the UnitFrame."],
 					values = {
 						--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 						["LEFT"] = L["Left"],
@@ -5335,7 +5457,7 @@ E.Options.args.unitframe.args["raid40"] = {
 					values = {
 						["Health"] = L["Health"],
 						["Power"] = L["Power"],
-						["InfoPanel"] = L["Information Bar"],
+						["InfoPanel"] = L["Information Panel"],
 						["Frame"] = L["Frame"]
 					}
 				},
@@ -5419,9 +5541,7 @@ E.Options.args.unitframe.args.raidpet = {
 			desc = L["Select a unit to copy settings from."],
 			values = {
 				["party"] = L["Party Frames"],
-				["raid10"] = L["Raid-10 Frames"],
-				["raid25"] = L["Raid-25 Frames"],
-				["raid40"] = L["Raid-40 Frames"],
+				["raid"] = L["Raid Frames"],
 			},
 			set = function(info, value) UF:MergeUnitSettings(value, "raidpet", true); end,
 		},
@@ -5469,7 +5589,7 @@ E.Options.args.unitframe.args.raidpet = {
 					order = 7,
 					type = "select",
 					name = L["Frame Orientation"],
-					desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+					desc = L["Set the orientation of the UnitFrame."],
 					values = {
 						--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 						["LEFT"] = L["Left"],
@@ -5581,7 +5701,6 @@ E.Options.args.unitframe.args.raidpet = {
 							name = L["Visibility"],
 							desc = L["The following macro must be true in order for the group to be shown, in addition to any filter that may already be set."],
 							width = "full",
-							desc = L["TEXT_FORMAT_DESC"],
 						},
 					},
 				},
@@ -5907,7 +6026,7 @@ E.Options.args.unitframe.args.tank = { -- Танки
 					order = 6,
 					type = "select",
 					name = L["Frame Orientation"],
-					desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+					desc = L["Set the orientation of the UnitFrame."],
 					values = {
 						--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 						["LEFT"] = L["Left"],
@@ -6046,7 +6165,7 @@ E.Options.args.unitframe.args.assist = { -- Помощники
 	args = {
 		resetSettings = {
 			type = "execute",
-			order = 2,
+			order = 1,
 			name = L["Restore Defaults"],
 			func = function(info, value) UF:ResetUnitSettings("assist"); end,
 		},
@@ -6090,7 +6209,7 @@ E.Options.args.unitframe.args.assist = { -- Помощники
 					order = 6,
 					type = "select",
 					name = L["Frame Orientation"],
-					desc = L["Set the orientation of the UnitFrame. If set to automatic it will adjust based on where the frame is located on the screen."],
+					desc = L["Set the orientation of the UnitFrame."],
 					values = {
 						--["AUTOMATIC"] = L["Automatic"], not sure if i will use this yet
 						["LEFT"] = L["Left"],
@@ -6222,9 +6341,9 @@ E.Options.args.unitframe.args.assist = { -- Помощники
 --MORE COLORING STUFF YAY
 E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup = {
 	order = -10,
-	type = 'group',
+	type = "group",
 	guiInline = true,
-	name = L['Class Resources'],
+	name = L["Class Resources"],
 	get = function(info)
 		local t = E.db.unitframe.colors.classResources[ info[#info] ];
 		local d = P.unitframe.colors.classResources[ info[#info] ]
@@ -6241,16 +6360,16 @@ E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGrou
 
 E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup.args.spacer = {
 	order = 2,
-	name = ' ',
-	type = 'description',
-	width = 'full'
+	name = " ",
+	type = "description",
+	width = "full"
 };
 
 for i = 1, 5 do
-	E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup.args['combo'..i] = {
+	E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup.args["combo"..i] = {
 		order = i + 2,
-		type = 'color',
-		name = L['Combo Point']..' #'..i,
+		type = "color",
+		name = L["Combo Point"].." #"..i,
 		get = function(info)
 			local t = E.db.unitframe.colors.classResources.comboPoints[i];
 			local d = P.unitframe.colors.classResources.comboPoints[i]
@@ -6269,22 +6388,22 @@ end
 if(P.unitframe.colors.classResources[E.myclass]) then
 	E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup.args.spacer2 = {
 		order = 10,
-		name = ' ',
-		type = 'description',
-		width = 'full'
+		name = " ",
+		type = "description",
+		width = "full"
 	};
 
 	local ORDER = 20
-	if(E.myclass == 'DEATHKNIGHT') then
+	if(E.myclass == "DEATHKNIGHT") then
 		local names = {
-			[1] = L['Blood'],
-			[2] = L['Unholy'],
-			[3] = L['Frost'],
-			[4] = L['Death']
+			[1] = L["Blood"],
+			[2] = L["Unholy"],
+			[3] = L["Frost"],
+			[4] = L["Death"]
 		};
 		for i = 1, 4 do
-			E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup.args['resource'..i] = {
-				type = 'color',
+			E.Options.args.unitframe.args.general.args.allColorsGroup.args.classResourceGroup.args["resource"..i] = {
+				type = "color",
 				name = names[i],
 				order = ORDER + i,
 				get = function(info)

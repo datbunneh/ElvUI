@@ -19,8 +19,7 @@ function UF:Construct_PartyFrames(unitGroup)
 	self:SetScript("OnLeave", UnitFrame_OnLeave);
 
 	self.RaisedElementParent = CreateFrame("Frame", nil, self);
-	self.RaisedElementParent:SetFrameStrata("MEDIUM");
-	self.RaisedElementParent:SetFrameLevel(self:GetFrameLevel() + 10);
+	self.RaisedElementParent:SetFrameLevel(self:GetFrameLevel() + 100);
 	self.BORDER = E.Border;
 	self.SPACING = E.Spacing;
 	self.SHADOW_SPACING = 3;
@@ -75,23 +74,19 @@ end
 
 function UF:Update_PartyHeader(header, db)
 	header.db = db;
+	if(not header.positioned) then
+		header:ClearAllPoints();
+		header:Point("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 4, 195);
 
-	local headerHolder = header:GetParent();
-	headerHolder.db = db;
+		E:CreateMover(header, header:GetName() .. "Mover", L["Party Frames"], nil, nil, nil, "ALL,PARTY,ARENA");
+		header.positioned = true;
 
-	if(not headerHolder.positioned) then
-		headerHolder:ClearAllPoints();
-		headerHolder:Point("BOTTOMLEFT", E.UIParent, "BOTTOMLEFT", 4, 195);
-
-		E:CreateMover(headerHolder, headerHolder:GetName() .. "Mover", L["Party Frames"], nil, nil, nil, "ALL,PARTY,ARENA");
-		headerHolder.positioned = true;
-
-		headerHolder:RegisterEvent("PLAYER_LOGIN");
-		headerHolder:RegisterEvent("ZONE_CHANGED_NEW_AREA");
-		headerHolder:SetScript("OnEvent", UF["PartySmartVisibility"]);
+		header:RegisterEvent("PLAYER_LOGIN");
+		header:RegisterEvent("ZONE_CHANGED_NEW_AREA");
+		header:SetScript("OnEvent", UF["PartySmartVisibility"]);
 	end
 
-	UF.PartySmartVisibility(headerHolder);
+	UF.PartySmartVisibility(header);
 end
 
 function UF:PartySmartVisibility(event)
@@ -119,9 +114,9 @@ end
 function UF:Update_PartyFrames(frame, db)
 	frame.db = db;
 
-	frame.Portrait = db.portrait.style == '2D' and frame.Portrait2D or frame.Portrait3D;
+	frame.Portrait = db.portrait.style == "2D" and frame.Portrait2D or frame.Portrait3D;
 	frame.colors = ElvUF.colors;
-	frame:RegisterForClicks(self.db.targetOnMouseDown and 'AnyDown' or 'AnyUp');
+	frame:RegisterForClicks(self.db.targetOnMouseDown and "AnyDown" or "AnyUp");
 
 	do
 		if(self.thinBorders) then
@@ -134,12 +129,12 @@ function UF:Update_PartyFrames(frame, db)
 
 		frame.ORIENTATION = db.orientation;
 		frame.UNIT_WIDTH = db.width;
-		frame.UNIT_HEIGHT = (E.global.tukuiMode and not db.infoPanel.enable) and db.height + db.infoPanel.height or db.height;
+		frame.UNIT_HEIGHT = db.infoPanel.enable and (db.height + db.infoPanel.height) or db.height;
 
 		frame.USE_POWERBAR = db.power.enable;
 		frame.POWERBAR_DETACHED = db.power.detachFromFrame;
-		frame.USE_INSET_POWERBAR = not frame.POWERBAR_DETACHED and db.power.width == 'inset' and frame.USE_POWERBAR;
-		frame.USE_MINI_POWERBAR = (not frame.POWERBAR_DETACHED and db.power.width == 'spaced' and frame.USE_POWERBAR);
+		frame.USE_INSET_POWERBAR = not frame.POWERBAR_DETACHED and db.power.width == "inset" and frame.USE_POWERBAR;
+		frame.USE_MINI_POWERBAR = (not frame.POWERBAR_DETACHED and db.power.width == "spaced" and frame.USE_POWERBAR);
 		frame.USE_POWERBAR_OFFSET = db.power.offset ~= 0 and frame.USE_POWERBAR and not frame.POWERBAR_DETACHED;
 		frame.POWERBAR_OFFSET = frame.USE_POWERBAR_OFFSET and db.power.offset or 0;
 
@@ -153,10 +148,12 @@ function UF:Update_PartyFrames(frame, db)
 		frame.CLASSBAR_WIDTH = 0;
 		frame.CLASSBAR_YOFFSET = 0;
 
-		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and (db.infoPanel.enable or E.global.tukuiMode);
+		frame.USE_INFO_PANEL = not frame.USE_MINI_POWERBAR and not frame.USE_POWERBAR_OFFSET and db.infoPanel.enable;
 		frame.INFO_PANEL_HEIGHT = frame.USE_INFO_PANEL and db.infoPanel.height or 0;
 
 		frame.BOTTOM_OFFSET = UF:GetHealthBottomOffset(frame);
+
+		frame.VARIABLES_SET = true;
 	end
 
 	if(frame.isChild) then
@@ -225,8 +222,8 @@ function UF:Update_PartyFrames(frame, db)
 		UF:Configure_TargetGlow(frame);
 
 		UF:EnableDisable_Auras(frame);
-		UF:Configure_Auras(frame, 'Buffs');
-		UF:Configure_Auras(frame, 'Debuffs');
+		UF:Configure_Auras(frame, "Buffs");
+		UF:Configure_Auras(frame, "Debuffs");
 
 		UF:Configure_RaidDebuffs(frame);
 
@@ -251,7 +248,7 @@ function UF:Update_PartyFrames(frame, db)
 
 	UF:Configure_Range(frame);
 
-	frame:UpdateAllElements();
+	frame:UpdateAllElements("ElvUI_UpdateAllElements");
 end
 
 UF["headerstoload"]["party"] = {nil, "ELVUI_UNITPET, ELVUI_UNITTARGET"};

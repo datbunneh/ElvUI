@@ -178,6 +178,7 @@ E.Options.args.tooltip = {
 			name = L["Visibility"],
 			get = function(info) return E.db.tooltip.visibility[ info[#info] ]; end,
 			set = function(info, value) E.db.tooltip.visibility[ info[#info] ] = value; end,
+			disabled = function() return not E.Tooltip; end,
 			args = {
 				header = {
 					order = 0,
@@ -185,8 +186,8 @@ E.Options.args.tooltip = {
 					name = L["Visibility"]
 				},
 				actionbars = {
- 					order = 1,
- 					type = "select",
+					order = 1,
+					type = "select",
 					name = L["ActionBars"],
 					desc = L["Choose when you want the tooltip to show. If a modifer is chosen, then you need to hold that down to show the tooltip."],
 					values = {
@@ -213,7 +214,7 @@ E.Options.args.tooltip = {
 				unitFrames = {
 					order = 3,
 					type = "select",
-					name = L["Unitframes"],
+					name = L["UnitFrames"],
 					desc = L["Choose when you want the tooltip to show. If a modifer is chosen, then you need to hold that down to show the tooltip."],
 					values = {
 						["ALL"] = L["Always Hide"],
@@ -237,6 +238,7 @@ E.Options.args.tooltip = {
 			name = L["Health Bar"],
 			get = function(info) return E.db.tooltip.healthBar[ info[#info] ]; end,
 			set = function(info, value) E.db.tooltip.healthBar[ info[#info] ] = value; end,
+			disabled = function() return not E.Tooltip; end,
 			args = {
 				header = {
 					order = 0,
@@ -250,8 +252,17 @@ E.Options.args.tooltip = {
 					min = 1, max = 15, step = 1,
 					set = function(info, value) E.db.tooltip.healthBar.height = value; GameTooltipStatusBar:Height(value); end
 				},
-				fontGroup = {
+				statusPosition = {
 					order = 2,
+					type = "select",
+					name = L["Position"],
+					values = {
+						["BOTTOM"] = L["Bottom"],
+						["TOP"] = L["Top"]
+					}
+				},
+				fontGroup = {
+					order = 3,
 					type = "group",
 					name = L["Fonts"],
 					guiInline = true,

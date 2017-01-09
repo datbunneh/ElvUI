@@ -1,12 +1,11 @@
 local E, L, V, P, G = unpack(select(2, ...));
-local DT = E:GetModule('DataTexts')
+local DT = E:GetModule("DataTexts")
 
 local join = string.join
 local format = string.format
 local find = string.find
 local gsub = string.gsub
 local sort = table.sort
-local ceil = math.ceil
 
 local tthead, ttsubh, ttoff = {r=0.4, g=0.78, b=1}, {r=0.75, g=0.9, b=1}, {r=.3,g=1,b=.3}
 local activezone, inactivezone = {r=0.3, g=1.0, b=0.3}, {r=0.65, g=0.65, b=0.65}
@@ -19,7 +18,6 @@ local guildMotDString = "%s |cffaaaaaa |cffffffff%s"
 local levelNameString = "|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r %s"
 local levelNameStatusString = "|cff%02x%02x%02x%d|r %s%s "
 local nameRankString = "%s |cff999999-|cffffffff %s"
-local standingString = join("", E:RGBToHex(ttsubh.r, ttsubh.g, ttsubh.b), "%s:|r |cFFFFFFFF%s/%s (%s%%)")
 local moreMembersOnlineString = join("", "+ %d ", FRIENDS_LIST_ONLINE, "...")
 local noteString = join("", "|cff999999   ", LABEL_NOTE, ":|r %s")
 local officerNoteString = join("", "|cff999999   ", GUILD_RANK1_DESC, ":|r %s")
@@ -57,7 +55,7 @@ local function UpdateGuildMessage()
 end
 
 local eventHandlers = {
-	['CHAT_MSG_SYSTEM'] = function(self)
+	["CHAT_MSG_SYSTEM"] = function(self)
 		GuildRoster()
 	end,
 	-- when we enter the world and guildframe is not available then
@@ -107,17 +105,17 @@ local menuList = {
 	{ text = CHAT_MSG_WHISPER_INFORM, hasArrow = true, notCheckable=true,}
 }
 
-local function inviteClick(self, playerName)
+local function inviteClick(_, playerName)
 	menuFrame:Hide()
 	InviteUnit(playerName)
 end
 
-local function whisperClick(self, playerName)
+local function whisperClick(_, playerName)
 	menuFrame:Hide()
 	SetItemRef( "player:"..playerName, ("|Hplayer:%1$s|h[%1$s]|h"):format(playerName), "LeftButton" )
 end
 
-local function Click(self, btn)
+local function Click(_, btn)
 	if btn == "RightButton" and IsInGuild() then
 		DT.tooltip:Hide()
 
@@ -131,7 +129,7 @@ local function Click(self, btn)
 		for i = 1, #guildTable do
 			info = guildTable[i]
 			if info[7] and info[1] ~= E.myname then
-				local classc, levelc = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[info[9]], GetQuestDifficultyColor(info[3])
+				classc, levelc = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[info[9]], GetQuestDifficultyColor(info[3])
 				if UnitInParty(info[1]) or UnitInRaid(info[1]) then
 					grouped = "|cffaaaaaa*|r"
 				elseif not info[11] then
@@ -162,7 +160,7 @@ local function OnEnter(self, _, noUpdate)
 
 	SortGuildTable(IsShiftKeyDown())
 
-	local guildName, guildRank = GetGuildInfo('player')
+	local guildName, guildRank = GetGuildInfo("player")
 
 	if guildName and guildRank then
 		DT.tooltip:AddDoubleLine(format(guildInfoString, guildName), format(guildInfoString2, online, total),tthead.r,tthead.g,tthead.b,tthead.r,tthead.g,tthead.b)
@@ -170,14 +168,14 @@ local function OnEnter(self, _, noUpdate)
 	end
 
 	if guildMotD ~= "" then
-		DT.tooltip:AddLine(' ')
+		DT.tooltip:AddLine(" ")
 		DT.tooltip:AddLine(format(guildMotDString, MOTD_COLON, guildMotD), ttsubh.r, ttsubh.g, ttsubh.b, 1)
 	end
 
 	local zonec, classc, levelc, info, grouped
 	local shown = 0
 
-	DT.tooltip:AddLine(' ')
+	DT.tooltip:AddLine(" ")
 	for i = 1, #guildTable do
 		-- if more then 30 guild members are online, we don't Show any more, but inform user there are more
 		if 30 - shown <= 1 then
@@ -208,15 +206,15 @@ local function OnEnter(self, _, noUpdate)
 	end
 end
 
-local function ValueColorUpdate(hex, r, g, b)
+local function ValueColorUpdate(hex)
 	displayString = join("", GUILD, ": ", hex, "%d|r")
-	noGuildString = join("", hex, L['No Guild'])
+	noGuildString = join("", hex, L["No Guild"])
 
 	if lastPanel ~= nil then
-		OnEvent(lastPanel, 'ELVUI_COLOR_UPDATE')
+		OnEvent(lastPanel, "ELVUI_COLOR_UPDATE")
 	end
 end
-E['valueColorUpdateFuncs'][ValueColorUpdate] = true
+E["valueColorUpdateFuncs"][ValueColorUpdate] = true
 
 --[[
 	DT:RegisterDatatext(name, events, eventFunc, updateFunc, clickFunc, onEnterFunc, onLeaveFunc)
@@ -230,4 +228,4 @@ E['valueColorUpdateFuncs'][ValueColorUpdate] = true
 	onLeaveFunc - function to fire OnLeave, if not provided one will be set for you that hides the tooltip.
 ]]
 
-DT:RegisterDatatext("Guild", {'PLAYER_ENTERING_WORLD', 'CHAT_MSG_SYSTEM', "GUILD_ROSTER_UPDATE", "PLAYER_GUILD_UPDATE", "GUILD_MOTD"}, OnEvent, nil, Click, OnEnter)
+DT:RegisterDatatext("Guild", {"PLAYER_ENTERING_WORLD", "CHAT_MSG_SYSTEM", "GUILD_ROSTER_UPDATE", "PLAYER_GUILD_UPDATE", "GUILD_MOTD"}, OnEvent, nil, Click, OnEnter)

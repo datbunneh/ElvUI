@@ -1,4 +1,4 @@
-local E, L, P, G = unpack(select(2, ...));
+local E, L, V, P, G = unpack(select(2, ...));
 local DT = E:GetModule("DataTexts");
 
 local time = time;
@@ -8,7 +8,7 @@ local GetGameTime = GetGameTime;
 local GetNumSavedInstances = GetNumSavedInstances;
 local GetSavedInstanceInfo = GetSavedInstanceInfo;
 local GetWintergraspWaitTime = GetWintergraspWaitTime;
-local RequestRaidInfo = RequestRaidInfo;
+local IsInInstance = IsInInstance;
 local SecondsToTime = SecondsToTime;
 local QUEUE_TIME_UNAVAILABLE = QUEUE_TIME_UNAVAILABLE;
 local TIMEMANAGER_TOOLTIP_REALMTIME = TIMEMANAGER_TOOLTIP_REALMTIME;
@@ -21,44 +21,24 @@ local lockoutInfoFormatNoEnc = "%s%s |cffaaaaaa(%s)";
 local difficultyInfo = {"N", "N", "H", "H"};
 local lockoutColorExtended, lockoutColorNormal = {r = 0.3, g = 1, b = 0.3}, {r = .8, g = .8, b = .8};
 
-local Update, lastPanel; -- UpValue
-local name, _, reset, difficultyId, locked, extended, isRaid, maxPlayers;
-
-local function ValueColorUpdate(hex)
-	timeDisplayFormat = join("", hex, ":|r");
-	dateDisplayFormat = join("", hex, " ");
-
-	if(lastPanel ~= nil) then
-		Update(lastPanel, 20000);
-	end
-end
-E["valueColorUpdateFuncs"][ValueColorUpdate] = true;
-
-local function Click(_, btn)
+local function OnClick(_, btn)
 	if(btn == "RightButton") then
- 		TimeManagerClockButton_OnClick(TimeManagerClockButton);
- 	else
- 		GameTimeFrame:Click();
- 	end
+		if(not IsAddOnLoaded("Blizzard_TimeManager")) then LoadAddOn("Blizzard_TimeManager"); end
+		TimeManagerClockButton_OnClick(TimeManagerClockButton);
+	else
+		GameTimeFrame:Click();
+	end
 end
 
 local function OnLeave()
 	DT.tooltip:Hide();
 end
 
-local function OnEvent(_, event)
-	if(event == "UPDATE_INSTANCE_INFO") then
-	--	RequestRaidInfo();
-	end
-end
-
 local function OnEnter(self)
 	DT:SetupTooltip(self)
 
-	--RequestRaidInfo();
-
 	local wgtime = GetWintergraspWaitTime() or nil;
-	inInstance, instanceType = IsInInstance();
+	local _, instanceType = IsInInstance();
 	if not(instanceType == "none") then
 		wgtime = QUEUE_TIME_UNAVAILABLE;
 	elseif(wgtime == nil) then
@@ -68,6 +48,7 @@ local function OnEnter(self)
 	end
 	DT.tooltip:AddDoubleLine(L["Wintergrasp"], wgtime, 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b);
 
+	local name, _, reset, difficultyId, locked, extended, isRaid, maxPlayers;
 	local oneraid, lockoutColor
 	for i = 1, GetNumSavedInstances() do
 		name, _, reset, difficultyId, locked, extended, _, isRaid, maxPlayers = GetSavedInstanceInfo(i);
@@ -94,8 +75,9 @@ local function OnEnter(self)
 	DT.tooltip:Show();
 end
 
+local lastPanel;
 local int = 5;
-function Update(self, t)
+local function OnUpdate(self, t)
 	int = int - t;
 
 	if(int > 0) then return; end
@@ -112,4 +94,14 @@ function Update(self, t)
 	int = 1;
 end
 
-DT:RegisterDatatext("Time", {"UPDATE_INSTANCE_INFO"}, OnEvent, Update, Click, OnEnter, OnLeave);
+local function ValueColorUpdate(hex)
+	timeDisplayFormat = join("", hex, ":|r");
+	dateDisplayFormat = join("", hex, " ");
+
+	if(lastPanel ~= nil) then
+		OnUpdate(lastPanel, 20000);
+	end
+end
+E["valueColorUpdateFuncs"][ValueColorUpdate] = true;
+
+DT:RegisterDatatext("Time", nil, nil, OnUpdate, OnClick, OnEnter, OnLeave);

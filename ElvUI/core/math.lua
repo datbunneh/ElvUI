@@ -21,8 +21,8 @@ function E:ShortValue(v)
 	if(E.db.general.numberPrefixStyle == "METRIC") then
 		if(abs(v) >= 1e9) then
 			return format("%.1fG", v / 1e9);
---		elseif(abs(v) >= 1e6) then
---			return format("%.1fM", v / 1e6);
+		elseif(abs(v) >= 1e6) then
+			return format("%.1fM", v / 1e6);
 --		elseif(abs(v) >= 1e3) then
 --			return format("%.1fk", v / 1e3);
 		else

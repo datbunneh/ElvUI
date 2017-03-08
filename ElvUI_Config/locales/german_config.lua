@@ -264,6 +264,7 @@ L["Require holding the Alt key down to move cursor or cycle through messages in 
 L["Right Only"] = "Nur Rechts"
 L["Right Panel Height"] = "Rechte Fensterhöhe"
 L["Right Panel Width"] = "Rechte Fensterbreite"
+L["Scroll Direction"] = true;
 L["Scroll Interval"] = "Scroll-Interval"
 L["Scroll Messages"] = "Scroll Nachrichten"
 L["Separate Panel Sizes"] = "Getrennte Chatfenster Größenoptionen"
@@ -314,6 +315,7 @@ L["ELVUI_CREDITS"] = "Ich möchte mich hier bei folgenden Personen bedanken, die
 L["Testing:"] = "Tester:"
 
 --DataBars
+L["Current - Percent (Remaining)"] = "Aktuell - Prozent (Verleibend)"
 L["DATABAR_DESC"] = "Einstellung der Informationsleisten."
 L["Current - Remaining"] = "Aktuell - Verbleibend"
 L["DataBars"] = "Informationsleisten"

@@ -354,8 +354,6 @@ function UF:UpdateColors()
 
 	ElvUF.colors.castColor = E:GetColorTable(db.castColor);
 	ElvUF.colors.castNoInterrupt = E:GetColorTable(db.castNoInterrupt);
-	ElvUF.colors.castCompleteColor = E:GetColorTable(db.castCompleteColor);
-	ElvUF.colors.castFailColor = E:GetColorTable(db.castFailColor);
 end
 
 function UF:Update_StatusBars()
@@ -726,7 +724,6 @@ function UF:CreateAndUpdateHeaderGroup(group, groupFilter, template, headerUpdat
 
 			if(maxPlayers > 0) then
 				numGroups = E:Round(maxPlayers/5);
-				E:Print(group, "Forcing maxGroups to: " .. numGroups .. " because maxPlayers is: " .. maxPlayers);
 			end
 		end
 	end
@@ -1017,6 +1014,7 @@ function ElvUF:DisableBlizzard(unit)
 				HandleFrame(("PartyMemberFrame%d"):format(i));
 			end
 		end
+		HandleFrame(PartyMemberBackground);
 	elseif((unit:match"(arena)%d?$" == "arena") and E.private["unitframe"]["disabledBlizzardFrames"].arena) then
 		local id = unit:match"arena(%d)";
 		if(id) then
@@ -1105,9 +1103,6 @@ function UF:Initialize()
 	if(E.private["unitframe"]["disabledBlizzardFrames"].party) then
 		InterfaceOptionsStatusTextPanelParty:SetScale(0.0001);
 		InterfaceOptionsStatusTextPanelParty:SetAlpha(0);
-	end
-
-	if(E.private["unitframe"]["disabledBlizzardFrames"].party) then
 		InterfaceOptionsFrameCategoriesButton11:SetScale(0.0001);
 	end
 
@@ -1125,7 +1120,7 @@ function UF:Initialize()
 	if(not ORD) then return; end
 	ORD.ShowDispelableDebuff = true;
 	ORD.FilterDispellableDebuff = true;
-	ORD.MatchBySpellName = false;
+	ORD.MatchBySpellName = true;
 end
 
 function UF:ResetUnitSettings(unit)

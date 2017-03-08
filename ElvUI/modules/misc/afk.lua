@@ -71,8 +71,6 @@ local function OnAnimFinished(self)
 end
 
 function AFK:SetAFK(status)
-	if(InCombatLockdown()) then return; end
-
 	if(status and not self.isAFK) then
 		if(InspectFrame) then
 			InspectPaperDollFrame:Hide();
@@ -145,6 +143,14 @@ function AFK:OnEvent(event, ...)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED");
 	end
 
+	if(not E.db.general.afk) then return; end
+	if(InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then return; end
+	if(UnitCastingInfo("player") ~= nil) then
+		--Don't activate afk if player is crafting stuff, check back in 30 seconds
+		self:ScheduleTimer("OnEvent", 30);
+		return;
+	end
+
 	self:SetAFK(UnitIsAFK("player"));
 end
 
@@ -186,6 +192,7 @@ local function Chat_OnMouseWheel(self, delta)
 	end
 end
 
+--[[
 local function Chat_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13)
 	local coloredName = GetColoredName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
 	local type = strsub(event, 10);
@@ -193,9 +200,9 @@ local function Chat_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 
 	local chatGroup = Chat_GetChatCategory(type);
 	local chatTarget, body;
-	if ( chatGroup == "BN_CONVERSATION" ) then
+	if(chatGroup == "BN_CONVERSATION") then
 		chatTarget = tostring(arg8);
-	elseif ( chatGroup == "WHISPER" or chatGroup == "BN_WHISPER" ) then
+	elseif(chatGroup == "WHISPER" or chatGroup == "BN_WHISPER") then
 		if(not(strsub(arg2, 1, 2) == "|K")) then
 			chatTarget = arg2:upper()
 		else
@@ -204,7 +211,7 @@ local function Chat_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 	end
 
 	local playerLink
-	if ( type ~= "BN_WHISPER" and type ~= "BN_CONVERSATION" ) then
+	if(type ~= "BN_WHISPER" and type ~= "BN_CONVERSATION") then
 		playerLink = "|Hplayer:"..arg2..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
 	else
 		playerLink = "|HBNplayer:"..arg2..":"..arg13..":"..arg11..":"..chatGroup..(chatTarget and ":"..chatTarget or "").."|h";
@@ -224,11 +231,13 @@ local function Chat_OnEvent(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg
 
 	self:AddMessage(CH:ConcatenateTimeStamp(body), info.r, info.g, info.b, info.id, false, accessID, typeID);
 end
+]]
 
 function AFK:Initialize()
 	local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[E.myclass] or RAID_CLASS_COLORS[E.myclass];
 
 	self.AFKMode = CreateFrame("Frame", "ElvUIAFKFrame");
+	self.AFKMode:SetFrameLevel(1);
 	self.AFKMode:SetScale(UIParent:GetScale());
 	self.AFKMode:SetAllPoints(UIParent);
 	self.AFKMode:Hide();
@@ -254,12 +263,13 @@ function AFK:Initialize()
 	self.AFKMode.chat:SetScript("OnEvent", CH.ChatFrame_OnEvent);
 
 	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode);
+	self.AFKMode.bottom:SetFrameLevel(0);
 	self.AFKMode.bottom:SetTemplate("Transparent");
-	self.AFKMode.bottom:Point("BOTTOM", self.AFKMode, "BOTTOM", 0, -2);
-	self.AFKMode.bottom:Width(GetScreenWidth());
+	self.AFKMode.bottom:Point("BOTTOM", self.AFKMode, "BOTTOM", 0, -E.Border);
+	self.AFKMode.bottom:Width(GetScreenWidth() + (E.Border*2));
 	self.AFKMode.bottom:Height(GetScreenHeight() * 0.1);
 
-	self.AFKMode.bottom.logo = self.AFKMode.bottom:CreateTexture(nil, "OVERLAY");
+	self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY");
 	self.AFKMode.bottom.logo:Size(320, 150);
 	self.AFKMode.bottom.logo:Point("CENTER", self.AFKMode.bottom, "CENTER", 0, 50);
 	self.AFKMode.bottom.logo:SetTexture("Interface\\AddOns\\ElvUI\\media\\textures\\logo_elvui");

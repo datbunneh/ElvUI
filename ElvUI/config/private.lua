@@ -12,6 +12,7 @@ V["general"] = {
 	["chatBubbles"] = "backdrop",
 	["chatBubbleFont"] = "PT Sans Narrow",
 	["chatBubbleFontSize"] = 14,
+	["chatBubbleFontOutline"] = "NONE",
 	["pixelPerfect"] = true,
 	["replaceBlizzFonts"] = true,
 	["minimap"] = {
@@ -45,7 +46,6 @@ V["chat"] = {
 }
 
 V["skins"] = {
-	["animations"] = true,
 	["ace3"] = {
 		["enable"] = true,
 	},

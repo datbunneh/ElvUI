@@ -1,7 +1,12 @@
 local E, L, V, P, G, _ = unpack(select(2, ...)); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
 local S = E:GetModule("Skins")
 
+local _G = _G
+local unpack = unpack
 local find = string.find;
+
+local UnitIsUnit = UnitIsUnit
+local UIDROPDOWNMENU_MAXLEVELS = UIDROPDOWNMENU_MAXLEVELS
 
 local function LoadSkin()
 	if E.private.skins.blizzard.enable ~= true or E.private.skins.blizzard.misc ~= true then return end
@@ -23,7 +28,7 @@ local function LoadSkin()
 		"StackSplitFrame",
 	}
 
-	for i = 1, getn(skins) do
+	for i = 1, #skins do
 		_G[skins[i]]:SetTemplate("Transparent")
 	end
 
@@ -35,7 +40,7 @@ local function LoadSkin()
 		"VoiceMacroMenu",
 	}
 	--
-	for i = 1, getn(ChatMenus) do
+	for i = 1, #ChatMenus do
 		if _G[ChatMenus[i]] == _G["ChatMenu"] then
 			_G[ChatMenus[i]]:HookScript("OnShow", function(self) self:SetTemplate("Default", true) self:SetBackdropColor(unpack(E["media"].backdropfadecolor)) self:ClearAllPoints() self:Point("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 30) end)
 		else
@@ -107,7 +112,7 @@ local function LoadSkin()
 		"Continue",
 	}
 
-	for i = 1, getn(BlizzardMenuButtons) do
+	for i = 1, #BlizzardMenuButtons do
 		local ElvuiMenuButtons = _G["GameMenuButton"..BlizzardMenuButtons[i]]
 		if ElvuiMenuButtons then
 			S:HandleButton(ElvuiMenuButtons)
@@ -122,7 +127,7 @@ local function LoadSkin()
 		"VideoOptionsFrame",
 	}
 
-	for i = 1, getn(BlizzardHeader) do
+	for i = 1, #BlizzardHeader do
 		local title = _G[BlizzardHeader[i].."Header"]
 		if title then
 			title:SetTexture("")
@@ -154,7 +159,7 @@ local function LoadSkin()
 		"RolePollPopupAcceptButton"
 	}
 
-	for i = 1, getn(BlizzardButtons) do
+	for i = 1, #BlizzardButtons do
 		local ElvuiButtons = _G[BlizzardButtons[i]]
 		if ElvuiButtons then
 			S:HandleButton(ElvuiButtons)
@@ -179,6 +184,9 @@ local function LoadSkin()
 	ReadyCheckFrameText:SetPoint("TOP", 0, -12)
 
 	-- others
+	ZoneTextFrame:ClearAllPoints()
+	ZoneTextFrame:Point("TOP", UIParent, 0, -128)
+
 	CoinPickupFrame:StripTextures();
 	CoinPickupFrame:SetTemplate("Transparent");
 
@@ -298,6 +306,14 @@ local function LoadSkin()
 		S:HandleButton(MacOptionsCancelFrameYes);
 	end
 
+	if GetLocale() == "koKR" then
+		S:HandleButton(GameMenuButtonRatings);
+
+		RatingMenuFrame:SetTemplate("Transparent");
+		RatingMenuFrameHeader:Kill()
+		S:HandleButton(RatingMenuButtonOkay);
+	end
+
 	BNToastFrameCloseButton:Size(32);
 	BNToastFrameCloseButton:Point("TOPRIGHT", "BNToastFrame", 4, 4);
 	S:HandleCloseButton(BNToastFrameCloseButton);
@@ -371,7 +387,7 @@ local function LoadSkin()
 		"CombatConfigSettingsRaid"
 	};
 
-	for i = 1, getn(combatConfigCheck) do
+	for i = 1, #combatConfigCheck do
 		S:HandleCheckBox(_G[combatConfigCheck[i]]);
 	end
 
@@ -491,7 +507,7 @@ local function LoadSkin()
 		"VideoOptionsEffectsPanelQuality",
 		"VideoOptionsEffectsPanelShaders",
 	}
-	for i = 1, getn(frames) do
+	for i = 1, #frames do
 		local SkinFrames = _G[frames[i]]
 		if SkinFrames then
 			SkinFrames:StripTextures()
@@ -681,7 +697,7 @@ local function LoadSkin()
 		"FeaturesPanelPreviewTalentChanges",
 		"FeaturesPanelEquipmentManager",
 	}
-	for i = 1, getn(interfacecheckbox) do
+	for i = 1, #interfacecheckbox do
 		local icheckbox = _G["InterfaceOptions"..interfacecheckbox[i]]
 		if icheckbox then
 			S:HandleCheckBox(icheckbox)
@@ -699,8 +715,9 @@ local function LoadSkin()
 		"CombatTextPanelFCTDropDown",
 		"CameraPanelStyleDropDown",
 		"MousePanelClickMoveStyleDropDown",
+		"LanguagesPanelLocaleDropDown"
 	}
-	for i = 1, getn(interfacedropdown) do
+	for i = 1, #interfacedropdown do
 		local idropdown = _G["InterfaceOptions"..interfacedropdown[i]]
 		if idropdown then
 			S:HandleDropDownBox(idropdown)
@@ -738,7 +755,7 @@ local function LoadSkin()
 		"VideoOptionsEffectsPanelDeathEffect",
 		"VideoOptionsEffectsPanelProjectedTextures",
 	}
-	for i = 1, getn(optioncheckbox) do
+	for i = 1, #optioncheckbox do
 		local ocheckbox = _G[optioncheckbox[i]]
 		if ocheckbox then
 			S:HandleCheckBox(ocheckbox)
@@ -750,7 +767,7 @@ local function LoadSkin()
 		"VideoOptionsResolutionPanelMultiSampleDropDown",
 		"AudioOptionsSoundPanelHardwareDropDown",
 	}
-	for i = 1, getn(optiondropdown) do
+	for i = 1, #optiondropdown do
 		local odropdown = _G[optiondropdown[i]]
 		if odropdown then
 			S:HandleDropDownBox(odropdown,165)

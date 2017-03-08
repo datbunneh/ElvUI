@@ -264,6 +264,7 @@ L["Require holding the Alt key down to move cursor or cycle through messages in 
 L["Right Only"] = "Droite seulement"
 L["Right Panel Height"] = "Hauteur de la fenêtre de discussion de droite";
 L["Right Panel Width"] = "Largeur de la fenêtre de discussion de droite";
+L["Scroll Direction"] = true;
 L["Scroll Interval"] = "Intervalle de défilement"
 L["Scroll Messages"] = true;
 L["Separate Panel Sizes"] = "Séparer la taille des fenêtres de discussion.";
@@ -314,6 +315,7 @@ L["ELVUI_CREDITS"] = "Je voudrais remercier tout spécialement ceux qui m'ont ai
 L["Testing:"] = "Testeurs: "
 
 --DataBars
+L["Current - Percent (Remaining)"] = true;
 L["DATABAR_DESC"] = "Setup on-screen display of information bars."
 L["Current - Remaining"] = true;
 L["DataBars"] = true;

@@ -19,6 +19,7 @@ local SetCVar = SetCVar;
 local IsAddOnLoaded = IsAddOnLoaded;
 local GetSpellInfo = GetSpellInfo;
 local WorldFrame = WorldFrame;
+local WorldGetNumChildren, WorldGetChildren = WorldFrame.GetNumChildren, WorldFrame.GetChildren;
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS;
 local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS;
 local COMBATLOG_OBJECT_CONTROL_PLAYER = COMBATLOG_OBJECT_CONTROL_PLAYER;
@@ -170,10 +171,10 @@ function mod:SetTargetIndicator()
 end
 
 function mod:OnUpdate(elapsed)
-	local count = WorldFrame:GetNumChildren();
+	local count = WorldGetNumChildren(WorldFrame);
 	if(count ~= numChildren) then
 		for i = numChildren + 1, count do
-			local frame = select(i, WorldFrame:GetChildren())
+			local frame = select(i, WorldGetChildren(WorldFrame))
 			local region = frame:GetRegions();
 
 			if(not mod.CreatedPlates[frame] and region and region:GetObjectType() == "Texture" and region:GetTexture() == OVERLAY) then
@@ -517,7 +518,7 @@ function mod:OnShow()
 		mod:UpdateElement_Auras(self);
 	end
 
-	mod:UpdateElement_CPoints(self);
+	--mod:UpdateElement_CPoints(self);
 
 	if(not mod.db.targetIndicator.colorMatchHealthBar) then
 		mod:ColorTargetIndicator(mod.db.targetIndicator.color.r, mod.db.targetIndicator.color.g, mod.db.targetIndicator.color.b);
@@ -543,7 +544,7 @@ function mod:OnHide()
 	self.Glow.r, self.Glow.g, self.Glow.b = nil, nil, nil;
 	self.Glow:Hide();
 
-	mod:HideComboPoints(self);
+	mod.HideComboPoints(self);
 end
 
 function mod:UpdateSettings()
@@ -651,73 +652,73 @@ function mod:StyleFrame(parent, noBackdrop, point)
 	end
 
 	if(E.PixelMode) then
-		point.bordertop = parent:CreateTexture(nil, "BORDER");
+		point.bordertop = parent:CreateTexture(nil, "BACKGROUND");
 		point.bordertop:SetPoint("TOPLEFT", point, "TOPLEFT", -noscalemult, noscalemult);
 		point.bordertop:SetPoint("TOPRIGHT", point, "TOPRIGHT", noscalemult, noscalemult);
 		point.bordertop:SetHeight(noscalemult);
 		point.bordertop:SetTexture(unpack(E["media"].bordercolor));
 
-		point.borderbottom = parent:CreateTexture(nil, "BORDER");
+		point.borderbottom = parent:CreateTexture(nil, "BACKGROUND");
 		point.borderbottom:SetPoint("BOTTOMLEFT", point, "BOTTOMLEFT", -noscalemult, -noscalemult);
 		point.borderbottom:SetPoint("BOTTOMRIGHT", point, "BOTTOMRIGHT", noscalemult, -noscalemult)
 		point.borderbottom:SetHeight(noscalemult);
 		point.borderbottom:SetTexture(unpack(E["media"].bordercolor));
 
-		point.borderleft = parent:CreateTexture(nil, "BORDER");
+		point.borderleft = parent:CreateTexture(nil, "BACKGROUND");
 		point.borderleft:SetPoint("TOPLEFT", point, "TOPLEFT", -noscalemult, noscalemult);
 		point.borderleft:SetPoint("BOTTOMLEFT", point, "BOTTOMLEFT", noscalemult, -noscalemult);
 		point.borderleft:SetWidth(noscalemult);
 		point.borderleft:SetTexture(unpack(E["media"].bordercolor));
 
-		point.borderright = parent:CreateTexture(nil, "BORDER");
+		point.borderright = parent:CreateTexture(nil, "BACKGROUND");
 		point.borderright:SetPoint("TOPRIGHT", point, "TOPRIGHT", noscalemult, noscalemult);
 		point.borderright:SetPoint("BOTTOMRIGHT", point, "BOTTOMRIGHT", -noscalemult, -noscalemult);
 		point.borderright:SetWidth(noscalemult);
 		point.borderright:SetTexture(unpack(E["media"].bordercolor));
 	else
-		point.bordertop = parent:CreateTexture(nil, "OVERLAY");
-		point.bordertop:SetPoint("TOPLEFT", point, "TOPLEFT", -noscalemult*2, noscalemult*2);
-		point.bordertop:SetPoint("TOPRIGHT", point, "TOPRIGHT", noscalemult*2, noscalemult*2);
+		point.bordertop = parent:CreateTexture(nil, "BORDER");
+		point.bordertop:SetPoint("TOPLEFT", point, "TOPLEFT", -noscalemult, noscalemult*2);
+		point.bordertop:SetPoint("TOPRIGHT", point, "TOPRIGHT", noscalemult, noscalemult*2);
 		point.bordertop:SetHeight(noscalemult);
 		point.bordertop:SetTexture(unpack(E.media.bordercolor));
 
-		point.bordertop.backdrop = parent:CreateTexture(nil, "BORDER")
-		point.bordertop.backdrop:SetPoint("TOPLEFT", point.bordertop, "TOPLEFT", -noscalemult, noscalemult);
-		point.bordertop.backdrop:SetPoint("TOPRIGHT", point.bordertop, "TOPRIGHT", noscalemult, noscalemult);
+		point.bordertop.backdrop = parent:CreateTexture(nil, "BACKGROUND")
+		point.bordertop.backdrop:SetPoint("TOPLEFT", point.bordertop, "TOPLEFT", noscalemult, noscalemult);
+		point.bordertop.backdrop:SetPoint("TOPRIGHT", point.bordertop, "TOPRIGHT", -noscalemult, noscalemult);
 		point.bordertop.backdrop:SetHeight(noscalemult * 3);
 		point.bordertop.backdrop:SetTexture(0, 0, 0);
 
-		point.borderbottom = parent:CreateTexture(nil, "OVERLAY");
-		point.borderbottom:SetPoint("BOTTOMLEFT", point, "BOTTOMLEFT", -noscalemult*2, -noscalemult*2);
-		point.borderbottom:SetPoint("BOTTOMRIGHT", point, "BOTTOMRIGHT", noscalemult*2, -noscalemult*2);
+		point.borderbottom = parent:CreateTexture(nil, "BORDER");
+		point.borderbottom:SetPoint("BOTTOMLEFT", point, "BOTTOMLEFT", -noscalemult, -noscalemult*2);
+		point.borderbottom:SetPoint("BOTTOMRIGHT", point, "BOTTOMRIGHT", noscalemult, -noscalemult*2);
 		point.borderbottom:SetHeight(noscalemult);
 		point.borderbottom:SetTexture(unpack(E.media.bordercolor));
 
-		point.borderbottom.backdrop = parent:CreateTexture(nil, "BORDER");
-		point.borderbottom.backdrop:SetPoint("BOTTOMLEFT", point.borderbottom, "BOTTOMLEFT", -noscalemult, -noscalemult);
-		point.borderbottom.backdrop:SetPoint("BOTTOMRIGHT", point.borderbottom, "BOTTOMRIGHT", noscalemult, -noscalemult);
+		point.borderbottom.backdrop = parent:CreateTexture(nil, "BACKGROUND");
+		point.borderbottom.backdrop:SetPoint("BOTTOMLEFT", point.borderbottom, "BOTTOMLEFT", noscalemult, -noscalemult);
+		point.borderbottom.backdrop:SetPoint("BOTTOMRIGHT", point.borderbottom, "BOTTOMRIGHT", -noscalemult, -noscalemult);
 		point.borderbottom.backdrop:SetHeight(noscalemult * 3);
 		point.borderbottom.backdrop:SetTexture(0, 0, 0);
 
-		point.borderleft = parent:CreateTexture(nil, "OVERLAY");
+		point.borderleft = parent:CreateTexture(nil, "BORDER");
 		point.borderleft:SetPoint("TOPLEFT", point, "TOPLEFT", -noscalemult*2, noscalemult*2);
 		point.borderleft:SetPoint("BOTTOMLEFT", point, "BOTTOMLEFT", noscalemult*2, -noscalemult*2);
 		point.borderleft:SetWidth(noscalemult);
 		point.borderleft:SetTexture(unpack(E.media.bordercolor));
 
-		point.borderleft.backdrop = parent:CreateTexture(nil, "BORDER");
+		point.borderleft.backdrop = parent:CreateTexture(nil, "BACKGROUND");
 		point.borderleft.backdrop:SetPoint("TOPLEFT", point.borderleft, "TOPLEFT", -noscalemult, noscalemult);
 		point.borderleft.backdrop:SetPoint("BOTTOMLEFT", point.borderleft, "BOTTOMLEFT", -noscalemult, -noscalemult);
 		point.borderleft.backdrop:SetWidth(noscalemult * 3);
 		point.borderleft.backdrop:SetTexture(0, 0, 0);
 
-		point.borderright = parent:CreateTexture(nil, "OVERLAY");
+		point.borderright = parent:CreateTexture(nil, "BORDER");
 		point.borderright:SetPoint("TOPRIGHT", point, "TOPRIGHT", noscalemult*2, noscalemult*2);
 		point.borderright:SetPoint("BOTTOMRIGHT", point, "BOTTOMRIGHT", -noscalemult*2, -noscalemult*2);
 		point.borderright:SetWidth(noscalemult);
 		point.borderright:SetTexture(unpack(E.media.bordercolor));
 
-		point.borderright.backdrop = parent:CreateTexture(nil, "BORDER");
+		point.borderright.backdrop = parent:CreateTexture(nil, "BACKGROUND");
 		point.borderright.backdrop:SetPoint("TOPRIGHT", point.borderright, "TOPRIGHT", noscalemult, noscalemult);
 		point.borderright.backdrop:SetPoint("BOTTOMRIGHT", point.borderright, "BOTTOMRIGHT", noscalemult, -noscalemult);
 		point.borderright.backdrop:SetWidth(noscalemult * 3);
@@ -1057,6 +1058,7 @@ end
 
 function mod:UNIT_COMBO_POINTS(_, unit)
 	if(unit == "player" or unit == "vehicle") then
+		self:ForEachPlate("HideComboPoints");
 		self:UpdateElement_CPointsByUnitID("target");
 	end
 end
@@ -1066,9 +1068,7 @@ function mod:Initialize()
 	if(E.private["nameplate"].enable ~= true) then return; end
 
 	self.PlateParent = CreateFrame("Frame", nil, WorldFrame);
-	self.PlateParent:SetFrameStrata("BACKGROUND");
-	self.PlateParent:SetFrameLevel(0);
-	WorldFrame:HookScript("OnUpdate", self.OnUpdate);
+	self.PlateParent:SetScript("OnUpdate", self.OnUpdate);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
 	self:RegisterEvent("PLAYER_REGEN_ENABLED");
@@ -1076,7 +1076,7 @@ function mod:Initialize()
 	self:RegisterEvent("UNIT_AURA");
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
-	self:RegisterEvent("UNIT_COMBO_POINTS");
+	self:ToggleComboPoints();
 
 	self.arrowIndicator = CreateFrame("Frame", nil, WorldFrame);
 	self.arrowIndicator.arrow = self.arrowIndicator:CreateTexture(nil, "BORDER");

@@ -309,6 +309,7 @@ L["Require holding the Alt key down to move cursor or cycle through messages in 
 L["Right Only"] = "우측 배경만 표시"
 L["Right Panel Height"] = "우측 패널 세로길이"
 L["Right Panel Width"] = "우측 패널 가로길이"
+L["Scroll Direction"] = true;
 L["Scroll Interval"] = "자동 스크롤링 시간"
 L["Scroll Messages"] = true;
 L["Separate Panel Sizes"] = "좌우패널 크기 따로설정"
@@ -362,6 +363,7 @@ L["ELVUI_CREDITS"] = "저는 이 애드온의 유지와 개발 코딩에 도움�
 L["Testing:"] = "|cff2eb7e4< 테스터 >|r"
 
 --DataBars
+L["Current - Percent (Remaining)"] = true;
 L["DATABAR_DESC"] = "Setup on-screen display of information bars."
 L["Current - Remaining"] = true;
 L["DataBars"] = true;

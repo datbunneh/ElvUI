@@ -48,7 +48,7 @@ local GetGuildRosterMOTD = GetGuildRosterMOTD;
 local ScrollFrameTemplate_OnMouseWheel = ScrollFrameTemplate_OnMouseWheel;
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS;
 
-local Var = {
+local GlobalStrings = {
 	["AFK"] = AFK,
 	["CHAT_FILTERED"] = CHAT_FILTERED,
 	["CHAT_IGNORED"] = CHAT_IGNORED,
@@ -169,7 +169,7 @@ CH.ClassNames = {};
 local numScrollMessages
 local function ChatFrame_OnMouseScroll(frame, delta)
 	numScrollMessages = CH.db.numScrollMessages or 3
-	if CH.db.chatDirection == "TOP" then
+	if CH.db.scrollDirection == "TOP" then
 		if delta < 0 then
 			if IsShiftKeyDown() then
 				frame:ScrollToTop()
@@ -192,7 +192,7 @@ local function ChatFrame_OnMouseScroll(frame, delta)
 					CH:CancelTimer(frame.ScrollTimer, true)
 				end
 
-				frame.ScrollTimer = CH:ScheduleTimer("ScrollToTop", CH.db.scrollDownInterval, frame)
+				frame.ScrollTimer = CH:ScheduleTimer("ScrollToBottom", CH.db.scrollDownInterval, frame)
 			end
 		end
 	else
@@ -273,6 +273,7 @@ function CH:StyleChat(frame)
 
 	local tab = _G[name.."Tab"]
 	local editbox = _G[name.."EditBox"]
+	local language = _G[name.."EditBoxLanguage"]
 
 	for _, texName in pairs(tabTexs) do
 		_G[tab:GetName()..texName.."Left"]:SetTexture(nil)
@@ -376,6 +377,11 @@ function CH:StyleChat(frame)
 			editbox:SetBackdropBorderColor(ChatTypeInfo[type].r,ChatTypeInfo[type].g,ChatTypeInfo[type].b)
 		end
 	end)
+
+	language:Height(22)
+	language:StripTextures()
+	language:SetTemplate("Transparent")
+	language:Point("LEFT", editbox, "RIGHT", -32, 0)
 
 	--copy chat button
 	frame.button = CreateFrame("Button", format("CopyChatButton%d", id), frame)
@@ -998,11 +1004,11 @@ function CH:ChatFrame_MessageEventHandler(event, ...)
 		elseif ( strsub(type,1,18) == "GUILD_ACHIEVEMENT" ) then
 			self:AddMessage(format(CH:ConcatenateTimeStamp(arg1), "|Hplayer:"..arg2.."|h".."["..coloredName.."]".."|h"), info.r, info.g, info.b, info.id);
 		elseif ( type == "IGNORED" ) then
-			self:AddMessage(format(CH:ConcatenateTimeStamp(Var.CHAT_IGNORED), arg2), info.r, info.g, info.b, info.id);
+			self:AddMessage(format(CH:ConcatenateTimeStamp(GlobalStrings.CHAT_IGNORED), arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "FILTERED" ) then
-			self:AddMessage(format(CH:ConcatenateTimeStamp(Var.CHAT_FILTERED), arg2), info.r, info.g, info.b, info.id);
+			self:AddMessage(format(CH:ConcatenateTimeStamp(GlobalStrings.CHAT_FILTERED), arg2), info.r, info.g, info.b, info.id);
 		elseif ( type == "RESTRICTED" ) then
-			self:AddMessage(CH:ConcatenateTimeStamp(Var.CHAT_RESTRICTED), info.r, info.g, info.b, info.id);
+			self:AddMessage(CH:ConcatenateTimeStamp(GlobalStrings.CHAT_RESTRICTED), info.r, info.g, info.b, info.id);
 		elseif ( type == "CHANNEL_LIST") then
 			if(channelLength > 0) then
 				self:AddMessage(format(CH:ConcatenateTimeStamp(_G["CHAT_"..type.."_GET"]..arg1), tonumber(arg8), arg4), info.r, info.g, info.b, info.id);
@@ -1139,7 +1145,7 @@ function CH:ChatFrame_MessageEventHandler(event, ...)
 			-- Add Channel
 			arg4 = gsub(arg4, "%s%-%s.*", "");
 			if(chatGroup == "BN_CONVERSATION") then
-				body = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, Var.MAX_WOW_CHAT_CHANNELS + arg8)..body;
+				body = format(CHAT_BN_CONVERSATION_GET_LINK, arg8, GlobalStrings.MAX_WOW_CHAT_CHANNELS + arg8)..body;
 			elseif(channelLength > 0) then
 				body = "|Hchannel:channel:"..arg8.."|h["..arg4.."]|h "..body;
 			end
@@ -1157,10 +1163,10 @@ function CH:ChatFrame_MessageEventHandler(event, ...)
 				body = body:gsub("^(.-|h) "..L["whispers"], "%1")
 				body = body:gsub("^(.-|h) "..L["says"], "%1")
 				body = body:gsub("^(.-|h) "..L["yells"], "%1")
-				body = body:gsub("<"..Var.AFK..">", "[|cffFF0000"..L["AFK"].."|r] ")
-				body = body:gsub("<"..Var.DND..">", "[|cffE7E716"..L["DND"].."|r] ")
+				body = body:gsub("<"..GlobalStrings.AFK..">", "[|cffFF0000"..L["AFK"].."|r] ")
+				body = body:gsub("<"..GlobalStrings.DND..">", "[|cffE7E716"..L["DND"].."|r] ")
 				body = body:gsub("%[BN_CONVERSATION:", "%[".."")
-				body = body:gsub("^%["..Var.RAID_WARNING.."%]", "["..L["RW"].."]")
+				body = body:gsub("^%["..GlobalStrings.RAID_WARNING.."%]", "["..L["RW"].."]")
 			end
 			self:AddMessage(CH:ConcatenateTimeStamp(body), info.r, info.g, info.b, info.id, false, accessID, typeID);
 		end
@@ -1171,7 +1177,7 @@ function CH:ChatFrame_MessageEventHandler(event, ...)
 			if ( self.tellTimer and (GetTime() > self.tellTimer) ) then
 				PlaySound("TellMessage");
 			end
-			self.tellTimer = GetTime() + Var.CHAT_TELL_ALERT_TIME;
+			self.tellTimer = GetTime() + GlobalStrings.CHAT_TELL_ALERT_TIME;
 			--FCF_FlashTab(self);
 		end
 
@@ -1208,11 +1214,6 @@ function CH:SetupChat()
 	if E.private.chat.enable ~= true then return end
 	for _, frameName in pairs(CHAT_FRAMES) do
 		local frame = _G[frameName]
-
-		if CH.db.chatDirection == "TOP" then
-			frame:SetInsertMode("TOP")
-		end
-
 		local id = frame:GetID();
 		local _, fontSize = FCF_GetChatWindowInfo(id);
 		self:StyleChat(frame)

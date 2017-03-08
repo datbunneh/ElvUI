@@ -341,8 +341,7 @@ function TT:RemoveTrashLines(tt)
 		local linetext = tiptext:GetText();
 
 		if(linetext == PVP or linetext == FACTION_ALLIANCE or linetext == FACTION_HORDE) then
-			tiptext:SetText(nil);
-			tiptext:Hide();
+			tiptext:SetText();
 		end
 	end
 end
@@ -428,7 +427,7 @@ function TT:GameTooltip_OnTooltipSetUnit(tt)
 		end
 	end
 
-	self:RemoveTrashLines(tt) --keep an eye on this may be buggy
+	self:RemoveTrashLines(tt)
 	local level = UnitLevel(unit)
 	local isShiftKeyDown = IsShiftKeyDown()
 
@@ -765,7 +764,7 @@ function TT:Initialize()
 	GameTooltipStatusBar:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", -E.Border, -(E.Spacing * 3))
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:Point("CENTER", GameTooltipStatusBar, 0, -3)
-	GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", self.db.healthBar.font), self.db.healthBar.fontSize, "OUTLINE")
+	GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", self.db.healthBar.font), self.db.healthBar.fontSize, self.db.healthBar.fontOutline)
 
 	if(not GameTooltip.hasMoney) then
 		SetTooltipMoney(GameTooltip, 1, nil, "", "");

@@ -63,7 +63,7 @@ L["TEXT_FORMAT_DESC"] = [=[Строка для изменения вида те�
 --ActionBars
 L["Action Paging"] = "Переключение панелей"
 L["ActionBars"] = "Панели команд"
-L["Action button keybinds will respond on key down, rather than on key up"] = true;
+L["Action button keybinds will respond on key down, rather than on key up"] = "Способности будут задействоваться, когда пользователь нажимает, а не отпускает клавишу.";
 L["Allow LBF to handle the skinning of this element."] = "Разрешить LBF обрабатывать этот элемент."
 L["Alpha"] = "Прозрачность"
 L["Anchor Point"] = "Точка фиксации"
@@ -108,7 +108,7 @@ L["Multiply the backdrops height or width by this value. This is usefull if you 
 L["Not Usable"] = "Нельзя использовать"
 L["Out of Power"] = "Мало ресурса"
 L["Out of Range"] = "Вне радиуса"
-L["Pick Up Action Key"] = true;
+L["Pick Up Action Key"] = "Клавиша перетаскивания";
 L["Restore Bar"] = "Восстановить панель"
 L["Restore the actionbars default settings"] = "Восстанавливает настройки панели по умолчанию."
 L["Seconds"] = "Секунды"
@@ -264,6 +264,7 @@ L["Require holding the Alt key down to move cursor or cycle through messages in 
 L["Right Only"] = "Только правый"
 L["Right Panel Height"] = "Высота правого чата"
 L["Right Panel Width"] = "Ширина правого чата"
+L["Scroll Direction"] = "Направление прокрутки";
 L["Scroll Interval"] = "Интервал прокрутки"
 L["Scroll Messages"] = "Прокручивание сообщений"
 L["Separate Panel Sizes"] = "Разные размеры панелей"
@@ -314,6 +315,7 @@ L["ELVUI_CREDITS"] = "Я бы хотел выделить следующих л�
 L["Testing:"] = "Тестирование:"
 
 --DataBars
+L["Current - Percent (Remaining)"] = "Текущий - Процент (Осталось)"
 L["DATABAR_DESC"] = "Контролирует отображение информационных полос."
 L["Current - Remaining"] = "Текущий - Осталось"
 L["DataBars"] = "Инфо-полосы"

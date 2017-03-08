@@ -292,8 +292,6 @@ P["unitframe"] = {
 		["transparentAurabars"] = false,
 		["castColor"] = { r = .31,g = .31,b = .31 },
 		["castNoInterrupt"] = { r = 0.78, g = 0.25, b = 0.25 },
-		["castCompleteColor"] = { r = 0.12, g = 0.86, b =0.15 },
-		["castFailColor"] = { r = 1.0, g = 0.09, b = 0 },
 		["castClassColor"] = false,
 		["castReactionColor"] = false,
 
@@ -2367,7 +2365,7 @@ P["auras"] = {
 	},
 }
 
-P["chat"] = { -- Чат
+P["chat"] = {
 	["lockPositions"] = true,
 	["url"] = true,
 	["shortChannels"] = true,
@@ -2384,7 +2382,7 @@ P["chat"] = { -- Чат
 	["noAlertInCombat"] = false,
 	["chatHistory"] = true,
 	["timeStampFormat"] = "NONE",
-	["chatDirection"] = "BOTTOM",
+	["scrollDirection"] = "BOTTOM",
 	["chatHistoryLines"] = 250,
 	["keywords"] = "%MYNAME%, ElvUI",
 	["separateSizes"] = false,
@@ -2482,6 +2480,7 @@ P["tooltip"] = {
 		["height"] = 7,
 		["font"] = "Homespun",
 		["fontSize"] = 10,
+		["fontOutline"] = "OUTLINE",
 		["statusPosition"] = "BOTTOM"
 	},
 	["useCustomFactionColors"] = false,

@@ -420,12 +420,18 @@ end
 
 function E:CheckIncompatible()
 	if(E.global.ignoreIncompatible) then return; end
+
 	if(IsAddOnLoaded("Prat-3.0") and E.private.chat.enable) then
 		E:IncompatibleAddOn("Prat-3.0", "Chat");
 	end
 
 	if(IsAddOnLoaded("Chatter") and E.private.chat.enable) then
 		E:IncompatibleAddOn("Chatter", "Chat");
+	end
+
+	if(IsAddOnLoaded("SnowfallKeyPress") and E.private.actionbar.enable) then
+		E.private.actionbar.keyDown = true
+		E:IncompatibleAddOn("SnowfallKeyPress", "ActionBar");
 	end
 
 	if(IsAddOnLoaded("TidyPlates") and E.private.nameplate.enable) then
@@ -727,6 +733,7 @@ function E:UpdateAll(ignoreInstall)
 	CH.db = self.db.chat;
 	CH:PositionChat(true);
 	CH:SetupChat();
+	CH:UpdateAnchors();
 
 	local AB = self:GetModule("ActionBars");
 	AB.db = self.db.actionbar;
@@ -755,6 +762,7 @@ function E:UpdateAll(ignoreInstall)
 	local NP = self:GetModule("NamePlates");
 	NP.db = self.db.nameplate;
 	NP:UpdateAllPlates();
+	NP:ToggleComboPoints();
 
 	local DataBars = self:GetModule("DataBars");
 	DataBars.db = E.db.databars;
@@ -785,6 +793,7 @@ function E:UpdateAll(ignoreInstall)
 	end
 
 	self:GetModule("Minimap"):UpdateSettings();
+	self:GetModule("AFK"):Toggle();
 
 	self:UpdateBorderColors();
 	self:UpdateBackdropColors();

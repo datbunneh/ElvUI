@@ -122,7 +122,7 @@ E.Options.args.tooltip = {
 							order = 4,
 							type = "range",
 							name = L["Header Font Size"],
-							min = 4, max = 212, step = 1,
+							min = 4, max = 33, step = 1,
 							get = function(info) return E.db.tooltip.headerFontSize; end,
 							set = function(info, value) E.db.tooltip.headerFontSize = value; TT:SetTooltipFonts(); end
 						},
@@ -130,7 +130,7 @@ E.Options.args.tooltip = {
 							order = 5,
 							type = "range",
 							name = L["Text Font Size"],
-							min = 4, max = 212, step = 1,
+							min = 4, max = 33, step = 1,
 							get = function(info) return E.db.tooltip.textFontSize end,
 							set = function(info, value) E.db.tooltip.textFontSize = value; TT:SetTooltipFonts() end
 						},
@@ -139,7 +139,7 @@ E.Options.args.tooltip = {
 							type = "range",
 							name = L["Comparison Font Size"],
 							desc = L["This setting controls the size of text in item comparison tooltips."],
-							min = 4, max = 212, step = 1,
+							min = 4, max = 33, step = 1,
 							get = function(info) return E.db.tooltip.smallTextFontSize; end,
 							set = function(info, value) E.db.tooltip.smallTextFontSize = value; TT:SetTooltipFonts(); end
 						}
@@ -261,39 +261,49 @@ E.Options.args.tooltip = {
 						["TOP"] = L["Top"]
 					}
 				},
-				fontGroup = {
+				text = {
 					order = 3,
-					type = "group",
-					name = L["Fonts"],
-					guiInline = true,
-					args = {
-						text = {
-							order = 1,
-							type = "toggle",
-							name = L["Text"],
-							set = function(info, value) E.db.tooltip.healthBar.text = value; if(value) then GameTooltipStatusBar.text:Show(); else GameTooltipStatusBar.text:Hide(); end end
-						},
-						font = {
-							type = "select", dialogControl = "LSM30_Font",
-							order = 2,
-							name = L["Font"],
-							values = AceGUIWidgetLSMlists.font,
-							set = function(info, value)
-								E.db.tooltip.healthBar.font = value;
-								GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", E.db.tooltip.healthBar.font), E.db.tooltip.healthBar.fontSize, "OUTLINE");
-							end
-						},
-						fontSize = {
-							order = 3,
-							name = L["Font Size"],
-							type = "range",
-							min = 6, max = 500, step = 1,
-							set = function(info, value)
-								E.db.tooltip.healthBar.fontSize = value;
-								GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", E.db.tooltip.healthBar.font), E.db.tooltip.healthBar.fontSize, "OUTLINE");
-							end
-						}
-					}
+					type = "toggle",
+					name = L["Text"],
+					set = function(info, value) E.db.tooltip.healthBar.text = value; if(value) then GameTooltipStatusBar.text:Show(); else GameTooltipStatusBar.text:Hide() end end
+				},
+				font = {
+					order = 4,
+					type = "select", dialogControl = "LSM30_Font",
+					name = L["Font"],
+					values = AceGUIWidgetLSMlists.font,
+					set = function(info, value)
+						E.db.tooltip.healthBar.font = value;
+						GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", E.db.tooltip.healthBar.font), E.db.tooltip.healthBar.fontSize, E.db.tooltip.healthBar.fontOutline);
+					end,
+					disabled = function() return not E.db.tooltip.healthBar.text end
+				},
+				fontSize = {
+					order = 5,
+					type = "range",
+					name = L["Font Size"],
+					min = 6, max = 500, step = 1,
+					set = function(info, value)
+						E.db.tooltip.healthBar.fontSize = value;
+						GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", E.db.tooltip.healthBar.font), E.db.tooltip.healthBar.fontSize, E.db.tooltip.healthBar.fontOutline);
+					end,
+					disabled = function() return not E.db.tooltip.healthBar.text end
+				},
+				fontOutline = {
+					order = 6,
+					type = "select",
+					name = L["Font Outline"],
+					values = {
+						["NONE"] = L["None"],
+						["OUTLINE"] = "OUTLINE",
+						["MONOCHROMEOUTLINE"] = "MONOCROMEOUTLINE",
+						["THICKOUTLINE"] = "THICKOUTLINE"
+					},
+					set = function(info, value)
+						E.db.tooltip.healthBar.fontOutline = value;
+						GameTooltipStatusBar.text:FontTemplate(E.LSM:Fetch("font", E.db.tooltip.healthBar.font), E.db.tooltip.healthBar.fontSize, E.db.tooltip.healthBar.fontOutline);
+					end,
+					disabled = function() return not E.db.tooltip.healthBar.text end
 				}
 			}
 		}

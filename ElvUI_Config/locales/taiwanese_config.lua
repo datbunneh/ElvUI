@@ -264,6 +264,7 @@ L["Require holding the Alt key down to move cursor or cycle through messages in 
 L["Right Only"] = "僅顯示右框背景"
 L["Right Panel Height"] = true;
 L["Right Panel Width"] = true;
+L["Scroll Direction"] = true;
 L["Scroll Interval"] = "滾動間隔"
 L["Scroll Messages"] = true;
 L["Separate Panel Sizes"] = true;
@@ -314,6 +315,7 @@ L["ELVUI_CREDITS"] = "我想透過這個特別方式, 向那些協助測試、�
 L["Testing:"] = "測試："
 
 --DataBars
+L["Current - Percent (Remaining)"] = true;
 L["DATABAR_DESC"] = "Setup on-screen display of information bars."
 L["Current - Remaining"] = true;
 L["DataBars"] = true;
